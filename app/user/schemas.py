@@ -1,0 +1,29 @@
+from marshmallow import Schema, fields, ValidationError
+from password_strength import PasswordPolicy, tests
+
+password_policy = PasswordPolicy.from_names(
+    length=8,
+    uppercase=1,
+    numbers=3,
+    special=1,
+)
+
+
+class StrongPassword(fields.Field):
+    def _deserialize(self, value, attr, data, **kwargs):
+        password: str = data['password']
+        strong_password_errors = password_policy.test(password)
+
+        if len(strong_password_errors) > 0:
+            raise ValidationError(
+                "Password must have at least 8 characters, "
+                "including 3 numbers, "
+                "1 special character "
+                "and 1 uppercase letter"
+                )
+
+
+class CreateUserSchema(Schema):
+    name = fields.Str()
+    email = fields.Email()
+    password = StrongPassword()

@@ -5,6 +5,7 @@ from sqlalchemy.orm import DeclarativeBase
 
 from .user.user import user
 
+
 def create_app():
     class Base(DeclarativeBase):
         pass
