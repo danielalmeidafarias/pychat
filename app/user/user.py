@@ -9,6 +9,7 @@ from .model import get_user_model
 from .schemas import CreateUserSchema
 from marshmallow.exceptions import ValidationError
 from password_strength import PasswordPolicy
+from .docs.response_models import response_models
 
 
 def user(db: SQLAlchemy):
@@ -16,7 +17,9 @@ def user(db: SQLAlchemy):
 
     user_namespace = Namespace('user', 'User Route')
 
-    create_user_model = request_models(user_namespace)
+    requests = request_models(user_namespace)
+    responses = response_models(user_namespace)
+
 
     @user_namespace.route('')
     class UserResource(Resource):
@@ -26,7 +29,10 @@ def user(db: SQLAlchemy):
 
             return data.__str__()
 
-        @user_namespace.expect(create_user_model)
+        @user_namespace.expect(requests['create_user'])
+        @user_namespace.response(model=responses['post_201'], description="Created!", code=201)
+        @user_namespace.response(model=responses['post_400'], description="Created!", code=400)
+        @user_namespace.response(model=responses['post_409'], description="Created!", code=409)
         def post(self):
             data = request.get_json()
             schema = CreateUserSchema()
@@ -51,10 +57,10 @@ def user(db: SQLAlchemy):
                 return {"message": "There is already a registered user with this credentials!"}
 
             return {
+                "message": "User created with success",
                 "id": new_user.id.__str__(),
                 "email": new_user.email,
-                "password": new_user.password.__str__(),
                 "name": new_user.name
-            }
+            }, 201
 
     return user_namespace

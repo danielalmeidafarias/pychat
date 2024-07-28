@@ -2,5 +2,5 @@ from marshmallow import Schema, fields
 
 
 class SignInSchema(Schema):
-    email = fields.Str()
+    email = fields.Email()
     password = fields.Str()
