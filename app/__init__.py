@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 
 from .user.user import user
+from .auth.auth import auth
 
 
 def create_app():
@@ -19,8 +20,10 @@ def create_app():
     db.init_app(app)
 
     user_namespace = user(db)
+    auth_namespace = auth(db)
 
     api.add_namespace(user_namespace)
+    api.add_namespace(auth_namespace)
 
     with app.app_context():
         db.create_all()

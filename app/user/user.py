@@ -1,36 +1,28 @@
 from flask import request
-from flask_restx import Resource,Namespace
+from flask_restx import Resource, Namespace
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from uuid import uuid4
 import bcrypt
-from .responses import get_responses
-from .model import user_model
+from .docs.request_models import request_models
+from .model import get_user_model
 from .schemas import CreateUserSchema
 from marshmallow.exceptions import ValidationError
 from password_strength import PasswordPolicy
 
-password_policy = PasswordPolicy.from_names(
-    length=8,
-    uppercase=1,
-    numbers=3,
-    special=1,
-    nonletters=1
-)
-
 
 def user(db: SQLAlchemy):
-    UserModel = user_model(db)
+    user_model = get_user_model(db)
 
     user_namespace = Namespace('user', 'User Route')
 
-    create_user_model = get_responses(user_namespace)
+    create_user_model = request_models(user_namespace)
 
     @user_namespace.route('')
     class UserResource(Resource):
         @staticmethod
         def get():
-            data = db.session.execute(db.select(UserModel)).scalars().all()
+            data = db.session.execute(db.select(user_model)).scalars().all()
 
             return data.__str__()
 
@@ -45,17 +37,7 @@ def user(db: SQLAlchemy):
             except ValidationError as err:
                 return {"message": "Data Validation Error!", "errors": err.messages}
 
-            tested_password = password_policy.test(data["password"])
-
-            if len(tested_password) > 0:
-                return {
-                    "message": "The password must have at least eight character, "
-                               "one uppercase letter, "
-                               "one special character, "
-                               "and three numbers"
-                }
-
-            new_user = UserModel(
+            new_user = user_model(
                 user_id=uuid4(),
                 email=validated_data["email"],
                 password=bcrypt.hashpw(str.encode(validated_data["password"]), bcrypt.gensalt()),

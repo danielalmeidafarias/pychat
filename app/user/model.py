@@ -3,13 +3,15 @@ from flask_sqlalchemy import SQLAlchemy
 from uuid import UUID as UUID4
 
 
-def user_model(db: SQLAlchemy):
+def get_user_model(db: SQLAlchemy):
     class UserModel(db.Model):
         def __init__(self, user_id, email, name, password):
             self.id = user_id
             self.email = email
             self.name = name
             self.password = password
+
+        __table_args__ = {'extend_existing': True}
 
         __tablename__ = 'user'
         id: Mapped[UUID4] = mapped_column(primary_key=True)
@@ -18,6 +20,6 @@ def user_model(db: SQLAlchemy):
         password: Mapped[bytes] = mapped_column()
 
         def __repr__(self) -> str:
-            return f"User(id={self.id}, name={self.name}, email={self.email})"
+            return f"User(id={self.id}, name={self.name}, email={self.email}), password={self.password}"
 
     return UserModel
