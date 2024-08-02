@@ -11,12 +11,6 @@ class AuthMiddleware:
     def __init__(self):
         pass
 
-    @staticmethod
-    def unauthorized_response():
-        return {
-            "message": "Unauthorized"
-        }, 401
-
     def auth_middleware(self, func):
         """
 
@@ -37,8 +31,9 @@ class AuthMiddleware:
 
                 return func(self)
             except Exception as err:
-                print(err)
-                return self.unauthorized_response()
+                return {
+                    "message": "Unauthorized"
+                }, 401
 
         return wrapper
 
