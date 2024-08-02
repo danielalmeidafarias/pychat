@@ -1,12 +1,9 @@
 from flask_restx import fields, Namespace
 
 
-def request_models(nm: Namespace):
-    requests = {}
-
-    requests["signin"] = nm.model(name="Signin model", model={
-        "email": fields.String,
-        "password": fields.String
-    })
-
-    return requests
+class AuthRequestModels:
+    def __init__(self, nm: Namespace):
+        self.signin = nm.model(name="Signin model", model={
+            "email": fields.String,
+            "password": fields.String
+        })

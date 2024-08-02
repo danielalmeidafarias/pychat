@@ -1,22 +1,20 @@
 from flask_restx import fields, Namespace
-from ...common.docs.response_models import common_response_models
+from ...common.docs.response_models import CommonResponseModels
 
 
-def response_models(nm: Namespace):
-    common_responses = common_response_models(nm)
-    responses = {}
+class AuthResponseModels:
+    def __init__(self, nm: Namespace):
+        common_responses = CommonResponseModels(nm)
 
-    responses['post_400'] = common_responses["data_validation_error"]
+        self.post_400 = common_responses.data_validation_error
 
-    responses['post_401'] = common_responses["unauthorized"]
+        self.post_401 = common_responses.unauthorized
 
-    responses["post_200"] = nm.model(name="auth_post_200_model", model={
-            "access_token": fields.Raw("jwt token")
-        }
-    )
+        self.post_200 = nm.model(name="auth_post_200_model", model={
+                "access_token": fields.Raw("jwt token")
+            }
+        )
 
-    responses["post_404"] = nm.model(name="auth_post_404_model", model={
-        "message": fields.Raw("No user with this credentials was found, please check the email")
-    })
-
-    return responses
+        self.post_404 = nm.model(name="auth_post_404_model", model={
+            "message": fields.Raw("No user with this credentials was found, please check the email")
+        })
