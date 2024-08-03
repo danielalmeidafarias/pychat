@@ -14,6 +14,7 @@ import datetime
 from .docs.response_models import AuthResponseModels
 from .docs.request_models import AuthRequestModels
 from app.db import db, r
+from ..middlewares.blocked_ip_middleware import middleware
 
 load_dotenv()
 
@@ -25,6 +26,7 @@ responses = AuthResponseModels(auth_namespace)
 
 @auth_namespace.route('')
 class AuthResource(Resource):
+    @middleware.blocked_ip_middleware
     @auth_namespace.expect(requests.signin)
     @auth_namespace.response(model=responses.post_200, description="Success", code=200)
     @auth_namespace.response(model=responses.post_400, description="Some field is wrong", code=400)
@@ -32,6 +34,7 @@ class AuthResource(Resource):
     @auth_namespace.response(model=responses.post_404, description="No user account found", code=404)
     def post(self):
         data = request.get_json()
+        ip_address = request.origin
         schema = SignInSchema()
         validated_data = schema.dump(data)
 
@@ -46,13 +49,15 @@ class AuthResource(Resource):
             login_trying_count = r.get(f"login_count:{user.id}")
 
             if login_trying_count is not None and int(login_trying_count) >= 20:
+                r.set(f"blocked_ip:{ip_address}", 1)
+                r.expireat(f"blocked_ip:{ip_address}", datetime.datetime.now() + datetime.timedelta(days=1))
 
                 return {
-                    "message": "Too many login attempts, try again later"
+                    "message": f"Ip address {ip_address} is temporary blocked"
                 }, 401
             elif login_trying_count is not None and int(login_trying_count) >= 5:
                 r.set(f"login_count:{user.id}", int(login_trying_count) + 1)
-                r.expireat(f"login_count:{user.id}", datetime.datetime.now() + datetime.timedelta(seconds=15))
+                r.expireat(f"login_count:{user.id}", datetime.datetime.now() + datetime.timedelta(minutes=15))
 
                 return {
                     "message": "Too many login attempts, try again later"
@@ -94,4 +99,3 @@ class AuthResource(Resource):
             return {
                 "message": "Unauthorized"
             }, 401
-
