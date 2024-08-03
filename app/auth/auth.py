@@ -43,13 +43,16 @@ class AuthResource(Resource):
         try:
             user = db.session.execute(db.select(UserModel).filter_by(email=validated_data["email"])).scalar_one()
 
-            login_trying_count = r.get(f"{user.id}")
+            login_trying_count = r.get(f"login_count:{user.id}")
 
-            print(login_trying_count)
+            if login_trying_count is not None and int(login_trying_count) >= 20:
 
-            if login_trying_count is not None and int(login_trying_count) >= 5:
-                r.set(f"{user.id}", int(login_trying_count) + 1)
-                r.expireat(f"{user.id}", datetime.datetime.now() + datetime.timedelta(seconds=15))
+                return {
+                    "message": "Too many login attempts, try again later"
+                }, 401
+            elif login_trying_count is not None and int(login_trying_count) >= 5:
+                r.set(f"login_count:{user.id}", int(login_trying_count) + 1)
+                r.expireat(f"login_count:{user.id}", datetime.datetime.now() + datetime.timedelta(seconds=15))
 
                 return {
                     "message": "Too many login attempts, try again later"
@@ -66,7 +69,7 @@ class AuthResource(Resource):
 
         if is_password_correct:
             if login_trying_count is not None:
-                r.delete(f"{user.id}")
+                r.delete(f"login_count:{user.id}")
 
             payload = {
                 "user_id": str(user.id),
@@ -83,11 +86,10 @@ class AuthResource(Resource):
             }, 200
         else:
             if login_trying_count is None:
-                r.set(f"{user.id}", 1)
+                r.set(f"login_count:{user.id}", 1)
             else:
-                r.set(f"{user.id}", int(login_trying_count) + 1)
-
-                r.expireat(f"{user.id}", datetime.datetime.now() + datetime.timedelta(minutes=15))
+                r.set(f"login_count:{user.id}", int(login_trying_count) + 1)
+                r.expireat(f"login_count:{user.id}", datetime.datetime.now() + datetime.timedelta(minutes=15))
 
             return {
                 "message": "Unauthorized"
