@@ -5,8 +5,6 @@ import datetime
 import os
 from dotenv import load_dotenv
 load_dotenv()
-
-
 class AuthMiddleware:
     def __init__(self):
         pass
@@ -21,6 +19,7 @@ class AuthMiddleware:
         @wraps(func)
         def wrapper(*args, **kwargs):
             authorization_header = request.headers.get('Authorization')
+            print(request.remote_addr)
 
             try:
                 decoded_jwt = jwt.decode(authorization_header, os.getenv('JWT_SECRET'), "HS256")

@@ -13,7 +13,7 @@ import jwt
 import datetime
 from .docs.response_models import AuthResponseModels
 from .docs.request_models import AuthRequestModels
-from app.db import db
+from app.db import db, r
 
 load_dotenv()
 
@@ -42,6 +42,18 @@ class AuthResource(Resource):
 
         try:
             user = db.session.execute(db.select(UserModel).filter_by(email=validated_data["email"])).scalar_one()
+
+            login_trying_count = r.get(f"{user.id}")
+
+            print(login_trying_count)
+
+            if login_trying_count is not None and int(login_trying_count) >= 5:
+                r.set(f"{user.id}", int(login_trying_count) + 1)
+                r.expireat(f"{user.id}", datetime.datetime.now() + datetime.timedelta(seconds=15))
+
+                return {
+                    "message": "Too many login attempts, try again later"
+                }, 401
         except NoResultFound:
             return {
                 "message": "No user with this credentials was found, please check the email"
@@ -53,9 +65,12 @@ class AuthResource(Resource):
         )
 
         if is_password_correct:
+            if login_trying_count is not None:
+                r.delete(f"{user.id}")
+
             payload = {
                 "user_id": str(user.id),
-                "expires_at": str(datetime.datetime.now() + datetime.timedelta(days=1))
+                "expires_at": str(datetime.datetime.now() + datetime.timedelta(hours=1))
             }
 
             access_token = jwt.encode(
@@ -67,6 +82,13 @@ class AuthResource(Resource):
                 "access_token": access_token
             }, 200
         else:
+            if login_trying_count is None:
+                r.set(f"{user.id}", 1)
+            else:
+                r.set(f"{user.id}", int(login_trying_count) + 1)
+
+                r.expireat(f"{user.id}", datetime.datetime.now() + datetime.timedelta(minutes=15))
+
             return {
                 "message": "Unauthorized"
             }, 401
