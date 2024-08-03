@@ -5,6 +5,9 @@
 2. // two factory login feature
 3. // password recovery feature
 
+## Testing
+1. Create some Unit Tests for security and systems rules 
+
 ## Code
 1. Separate max try logic from auth route
 2. // blocked_ip addressess from auth route
