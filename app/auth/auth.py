@@ -1,6 +1,4 @@
-import json
 from flask_restx import Resource, Namespace
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import NoResultFound
 from flask import request
 from .schemas import SignInSchema
@@ -34,7 +32,6 @@ class AuthResource(Resource):
     @auth_namespace.response(model=responses.post_404, description="No user account found", code=404)
     def post(self):
         data = request.get_json()
-        ip_address = request.origin
         schema = SignInSchema()
         validated_data = schema.dump(data)
 
@@ -45,23 +42,6 @@ class AuthResource(Resource):
 
         try:
             user = db.session.execute(db.select(UserModel).filter_by(email=validated_data["email"])).scalar_one()
-
-            login_trying_count = r.get(f"login_count:{user.id}")
-
-            if login_trying_count is not None and int(login_trying_count) >= 20:
-                r.set(f"blocked_ip:{ip_address}", 1)
-                r.expireat(f"blocked_ip:{ip_address}", datetime.datetime.now() + datetime.timedelta(days=1))
-
-                return {
-                    "message": f"Ip address {ip_address} is temporary blocked"
-                }, 401
-            elif login_trying_count is not None and int(login_trying_count) >= 5:
-                r.set(f"login_count:{user.id}", int(login_trying_count) + 1)
-                r.expireat(f"login_count:{user.id}", datetime.datetime.now() + datetime.timedelta(minutes=15))
-
-                return {
-                    "message": "Too many login attempts, try again later"
-                }, 401
         except NoResultFound:
             return {
                 "message": "No user with this credentials was found, please check the email"
@@ -73,8 +53,7 @@ class AuthResource(Resource):
         )
 
         if is_password_correct:
-            if login_trying_count is not None:
-                r.delete(f"login_count:{user.id}")
+            r.delete(f"login_count:{user.id}")
 
             payload = {
                 "user_id": str(user.id),
@@ -90,11 +69,28 @@ class AuthResource(Resource):
                 "access_token": access_token
             }, 200
         else:
+            login_trying_count = r.get(f"login_count:{user.id}")
+
             if login_trying_count is None:
                 r.set(f"login_count:{user.id}", 1)
+                r.expireat(f"login_count:{user.id}", datetime.datetime.now() + datetime.timedelta(minutes=15))
             else:
                 r.set(f"login_count:{user.id}", int(login_trying_count) + 1)
                 r.expireat(f"login_count:{user.id}", datetime.datetime.now() + datetime.timedelta(minutes=15))
+
+                if int(login_trying_count) >= 20:
+                    ip_address = request.origin
+
+                    r.set(f"blocked_ip:{ip_address}", 1)
+                    r.expireat(f"blocked_ip:{ip_address}", datetime.datetime.now() + datetime.timedelta(days=1))
+
+                if int(login_trying_count) >= 5:
+                    r.set(f"login_count:{user.id}", int(login_trying_count) + 1)
+                    r.expireat(f"login_count:{user.id}", datetime.datetime.now() + datetime.timedelta(minutes=15))
+
+                    return {
+                        "message": "Too many login attempts, try again later"
+                    }, 401
 
             return {
                 "message": "Unauthorized"
