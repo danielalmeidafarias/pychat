@@ -28,7 +28,7 @@ class UserResource(Resource):
                  For testing only purpose
         """
         data = db.session.execute(db.select(UserModel)).scalars().all()
-        return {"users": data.__str__()}, 201
+        return {"users": data.__str__()}, 200
 
     @user_namespace.expect(requests.crate_user)
     @user_namespace.response(model=responses.post_201, description="Created!", code=201)
@@ -46,7 +46,7 @@ class UserResource(Resource):
         try:
             schema.load(validated_data)
         except ValidationError as err:
-            return {"message": "Data Validation Error!", "errors": err.messages}
+            return {"message": "Data Validation Error!", "errors": err.messages}, 400
 
         new_user = UserModel(
             user_id=uuid4(),
@@ -59,7 +59,7 @@ class UserResource(Resource):
             db.session.add(new_user)
             db.session.commit()
         except IntegrityError as err:
-            return {"message": "There is already a registered user with this credentials!"}
+            return {"message": "There is already a registered user with this credentials!"}, 409
 
         return {
             "message": "User created with success",
