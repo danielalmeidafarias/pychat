@@ -21,4 +21,4 @@ class UserModel(db.Model):
     password: Mapped[bytes] = mapped_column()
 
     def __repr__(self) -> str:
-        return f"User(id={self.id}, name={self.name}, email={self.email}), password={self.password}"
+        return f"{{id:{self.id}, name:{self.name}}}"
