@@ -49,7 +49,6 @@ class UserResource(Resource):
             return {"message": "Data Validation Error!", "errors": err.messages}, 400
 
         new_user = UserModel(
-            user_id=uuid4(),
             email=validated_data["email"],
             password=bcrypt.hashpw(str.encode(validated_data["password"]), bcrypt.gensalt()),
             name=validated_data["name"]
