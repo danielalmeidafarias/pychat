@@ -15,6 +15,4 @@ class AuthResponseModels:
             }
         )
 
-        self.post_404 = nm.model(name="auth_post_404_model", model={
-            "message": fields.Raw("No user with this credentials was found, please check the email")
-        })
+        self.post_404 = common_responses.no_user_found

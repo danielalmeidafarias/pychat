@@ -18,11 +18,14 @@ requests = UserRequestModels(user_namespace)
 responses = UserResponseModels(user_namespace)
 
 @user_namespace.route('')
-# @user_namespace.header('Authorization', 'Authorization access token')
+@user_namespace.response(code=500, model=responses.internal_error, description='Something went wrong')
 class UserResource(Resource):
     @middleware.auth_middleware
-    @user_namespace.header('Authorization')
+    @user_namespace.header('Authorization', 'Authorization access token')
     @user_namespace.param('user_id')
+    @user_namespace.response(code=400, model=responses.get_400, description='No user found')
+    @user_namespace.response(code=200, model=responses.get_all_200, description='All users')
+    @user_namespace.response(code=200, model=responses.get_one_200, description='One user')
     def get(self):
         """
 
