@@ -16,5 +16,5 @@ class UserResponseModels:
         })
 
         self.post_409 = nm.model(name="user_post_409_model", model={
-            "message": fields.Raw("There is already a user with this credentials")
+            "message": fields.Raw("There is already a user with this credentials!")
         })

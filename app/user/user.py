@@ -59,7 +59,7 @@ class UserResource(Resource):
             db.session.add(new_user)
             db.session.commit()
         except IntegrityError as err:
-            return {"message": "There is already a registered user with this credentials!"}, 409
+            return {"message": "There is already a user with this credentials!"}, 409
 
         return {
             "message": "User created with success",
