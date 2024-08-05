@@ -1,4 +1,7 @@
 from marshmallow import Schema, fields
+from app.db import db
+from app.user.model import UserModel
+import bcrypt
 
 
 def test_create_user(client):
@@ -62,9 +65,16 @@ def test_weak_password_error(client):
 
 
 def test_created_user_in_db(client):
-    pass
+    response = client.post('/user', json={
+        "email": "daniel@email.com",
+        "name": "Daniel2",
+        "password": "Daniel@123"
+    })
 
+    user_id = response.json['id']
 
-def test_encrypted_password(client):
-    pass
+    user = db.session.execute(db.select(UserModel).where(UserModel.id == user_id)).scalar_one()
 
+    assert user.id == user_id and \
+           user.email == user.email and \
+           bcrypt.checkpw(str.encode("Daniel@123"), user.password)

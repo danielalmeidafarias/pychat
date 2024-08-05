@@ -1,10 +1,6 @@
-import json
-
 from flask import request
 from flask_restx import Resource, Namespace
 from sqlalchemy.exc import IntegrityError, NoResultFound
-from sqlalchemy import Row
-from uuid import uuid4
 import bcrypt
 from .model import UserModel
 from .schemas import CreateUserSchema
@@ -16,6 +12,7 @@ from app.middlewares.auth_middleware import middleware
 user_namespace = Namespace('user', 'User Route')
 requests = UserRequestModels(user_namespace)
 responses = UserResponseModels(user_namespace)
+
 
 @user_namespace.route('')
 @user_namespace.response(code=500, model=responses.internal_error, description='Something went wrong')
