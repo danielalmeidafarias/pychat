@@ -1,13 +1,14 @@
+import json
+
 from flask import request
 from flask_restx import Resource, Namespace
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, NoResultFound
+from sqlalchemy import Row
 from uuid import uuid4
 import bcrypt
 from .model import UserModel
 from .schemas import CreateUserSchema
 from marshmallow.exceptions import ValidationError
-from password_strength import PasswordPolicy
 from .docs.response_models import UserResponseModels
 from .docs.request_models import UserRequestModels
 from app.db import db
@@ -21,14 +22,38 @@ responses = UserResponseModels(user_namespace)
 class UserResource(Resource):
     @middleware.auth_middleware
     @user_namespace.header('Authorization')
+    @user_namespace.param('user_id')
     def get(self):
         """
 
-        :return: All registered users
-                 For testing only purpose
+        :return: registered users
+        :param: user_Id
         """
-        data = db.session.execute(db.select(UserModel)).scalars().all()
-        return {"users": data.__str__()}, 200
+        user_id = request.args.get('user_id')
+
+        if user_id:
+            try:
+                user = db.session.execute(db.select(UserModel).where(UserModel.id == user_id)).scalar_one()
+                return {
+                    "user": {
+                        "id": user.id,
+                        "name": user.name
+                    }
+                },  200
+            except NoResultFound:
+                return {"message": "No user with this credentials was found"}, 400
+
+            except Exception as err:
+                print(err)
+                return {"message": "I'm sorry, something went wrong. Try again later"}, 500
+        else:
+            try:
+                data = db.session.execute(db.select(UserModel)).scalars().all()
+                users = [{"id": user.id, "name": user.name} for user in data]
+                return {"users": users}, 200
+            except Exception as err:
+                print(err)
+                return {"message": "I'm sorry, something went wrong. Try again later"}, 500
 
     @user_namespace.expect(requests.crate_user)
     @user_namespace.response(model=responses.post_201, description="Created!", code=201)
@@ -66,4 +91,3 @@ class UserResource(Resource):
             "email": new_user.email,
             "name": new_user.name
         }, 201
-
