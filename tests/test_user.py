@@ -26,12 +26,7 @@ def test_create_user(client):
     assert response.status_code == 201
 
 
-def test_user_already_exists(client):
-    client.post('/user', json={
-        "email": "daniel@email.com",
-        "name": "Daniel",
-        "password": "Daniel@123"
-    })
+def test_user_already_exists(client, created_user):
     response = client.post('/user', json={
         "email": "daniel@email.com",
         "name": "Daniel2",
@@ -64,17 +59,28 @@ def test_weak_password_error(client):
            response.json['message'] == "Data Validation Error!"
 
 
-def test_created_user_in_db(client):
-    response = client.post('/user', json={
-        "email": "daniel@email.com",
-        "name": "Daniel2",
-        "password": "Daniel@123"
-    })
-
-    user_id = response.json['id']
+def test_created_user_in_db(client, created_user):
+    user_id = created_user['id']
 
     user = db.session.execute(db.select(UserModel).where(UserModel.id == user_id)).scalar_one()
 
     assert user.id == user_id and \
            user.email == user.email and \
            bcrypt.checkpw(str.encode("Daniel@123"), user.password)
+
+
+def test_get_all_users(client, access_token):
+    response = client.get('/user', headers={
+        "Authorization": access_token
+    })
+
+    assert response.json == {'users': []}
+
+
+def test_get_one_user(client, access_token, created_user):
+    response = client.get('/user', headers={
+        "Authorization": access_token
+    }, query_string={"user_id": created_user['id']})
+
+    assert response.json['user']['id'] == created_user['id']
+

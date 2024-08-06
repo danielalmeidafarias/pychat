@@ -4,6 +4,32 @@ from flask_restx import Api
 from app.db import db
 from app.user.user import user_namespace
 from app.auth.auth import auth_namespace
+import datetime
+import jwt
+import os
+
+
+@pytest.fixture
+def created_user(client):
+    response = client.post('/user', json={
+        "email": "daniel@email.com",
+        "name": "Daniel",
+        "password": "Daniel@123"
+    })
+
+    return response.json
+
+@pytest.fixture()
+def access_token():
+    payload = {
+        "user_id": "a13ee687-8dcb-4c34-9881-5ab6b3bdd9f4",
+        "expires_at": str(datetime.datetime.now() + datetime.timedelta(hours=1))
+    }
+
+    access_token = jwt.encode(
+        payload=payload,
+        key=os.getenv('JWT_SECRET')
+    )
 
 
 @pytest.fixture
