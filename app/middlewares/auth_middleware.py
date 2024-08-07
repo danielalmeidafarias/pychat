@@ -9,7 +9,7 @@ class AuthMiddleware:
     def __init__(self):
         pass
 
-    def auth_middleware(self, func):
+    def middleware(self, func):
         """
 
         :param func: Function to be executed after/if authorization passes
@@ -36,4 +36,4 @@ class AuthMiddleware:
         return wrapper
 
 
-middleware = AuthMiddleware()
+auth_middleware = AuthMiddleware().middleware
