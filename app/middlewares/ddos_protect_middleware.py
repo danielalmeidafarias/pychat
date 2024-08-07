@@ -51,7 +51,7 @@ class DDOSProtectMiddleware:
                 elif requests_per_second > 1 and int(requests) + 1 >= 10:
                     return {
                         "message": "Too many requests"
-                    }
+                    }, 429
                 else:
                     return func(self)
 
