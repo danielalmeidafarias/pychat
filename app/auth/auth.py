@@ -12,7 +12,7 @@ import datetime
 from .docs.response_models import AuthResponseModels
 from .docs.request_models import AuthRequestModels
 from app.db import db, r
-from ..middlewares.blocked_ip_middleware import middleware
+from ..middlewares.blocked_ip_middleware import blocked_ip_middleware
 
 load_dotenv()
 
@@ -24,7 +24,7 @@ responses = AuthResponseModels(auth_namespace)
 
 @auth_namespace.route('')
 class AuthResource(Resource):
-    @middleware.blocked_ip_middleware
+    @blocked_ip_middleware
     @auth_namespace.expect(requests.signin)
     @auth_namespace.response(model=responses.post_200, description="Success", code=200)
     @auth_namespace.response(model=responses.post_400, description="Some field is wrong", code=400)
