@@ -7,27 +7,36 @@ from .schemas import CreateUserSchema
 from marshmallow.exceptions import ValidationError
 from .docs.response_models import UserResponseModels
 from .docs.request_models import UserRequestModels
+from ..common.docs.response_models import CommonResponseModels
 from app.db import db
-from app.middlewares.auth_middleware import middleware
+from app.middlewares.auth_middleware import auth_middleware
+from app.middlewares.blocked_ip_middleware import blocked_ip_middleware
+from app.middlewares.ddos_protect_middleware import ddos_protect_middleware
+
+
 user_namespace = Namespace('user', 'User Route')
 requests = UserRequestModels(user_namespace)
 responses = UserResponseModels(user_namespace)
+common_responses = CommonResponseModels(user_namespace)
 
 
 @user_namespace.route('')
-@user_namespace.response(code=500, model=responses.internal_error, description='Something went wrong')
+@user_namespace.response(code=500, model=common_responses.internal_error, description='Something went wrong')
+@user_namespace.response(code=400, model=common_responses.data_validation_error, description='Data Validation Error')
+@user_namespace.response(code=401, model=common_responses.unauthorized, description='Unauthorized')
+@user_namespace.response(code=404, model=common_responses.no_user_found, description='No user found')
 class UserResource(Resource):
-    @middleware.auth_middleware
+    @auth_middleware
+    @ddos_protect_middleware
+    @blocked_ip_middleware
     @user_namespace.header('Authorization', 'Authorization access token')
     @user_namespace.param('user_id')
-    @user_namespace.response(code=400, model=responses.get_400, description='No user found')
     @user_namespace.response(code=200, model=responses.get_all_200, description='All users')
     @user_namespace.response(code=200, model=responses.get_one_200, description='One user')
     def get(self):
         """
 
-        :return: registered users
-        :param: user_Id
+        Registered users
         """
         user_id = request.args.get('user_id')
 
@@ -57,13 +66,12 @@ class UserResource(Resource):
 
     @user_namespace.expect(requests.crate_user)
     @user_namespace.response(model=responses.post_201, description="Created!", code=201)
-    @user_namespace.response(model=responses.post_400, description="Created!", code=400)
-    @user_namespace.response(model=responses.post_409, description="Created!", code=409)
+    @user_namespace.response(model=responses.post_409, description="Conflict", code=409)
     def post(self):
         """
 
-        :return: Register new users
-        """
+          Register new users
+          """
         data = request.get_json()
         schema = CreateUserSchema()
         validated_data = schema.dump(data)
