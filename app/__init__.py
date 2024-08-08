@@ -3,6 +3,7 @@ from flask_restx import Api
 from .db import db
 from .user.user import user_namespace
 from .auth.auth import auth_namespace
+from .friendship_request.friendship_request import friendship_request_namespace
 
 
 def create_app():
@@ -14,6 +15,7 @@ def create_app():
 
     api.add_namespace(user_namespace)
     api.add_namespace(auth_namespace)
+    api.add_namespace(friendship_request_namespace)
 
     with app.app_context():
         db.create_all()
