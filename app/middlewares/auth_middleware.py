@@ -5,9 +5,18 @@ import datetime
 import os
 from dotenv import load_dotenv
 load_dotenv()
-class AuthMiddleware:
+
+
+class Auth:
     def __init__(self):
         pass
+
+
+    @staticmethod
+    def decode_jwt(authorization_header: str):
+        decoded_jwt = jwt.decode(authorization_header, os.getenv('JWT_SECRET'), "HS256")
+        return decoded_jwt
+
 
     def middleware(self, func):
         """
@@ -21,7 +30,7 @@ class AuthMiddleware:
             authorization_header = request.headers.get('Authorization')
 
             try:
-                decoded_jwt = jwt.decode(authorization_header, os.getenv('JWT_SECRET'), "HS256")
+                decoded_jwt = self.decode_jwt(authorization_header)
                 expires_at = datetime.datetime.strptime(decoded_jwt['expires_at'], '%Y-%m-%d %H:%M:%S.%f')
 
                 if expires_at < datetime.datetime.now():
@@ -36,4 +45,5 @@ class AuthMiddleware:
         return wrapper
 
 
-auth_middleware = AuthMiddleware().middleware
+auth_middleware = Auth().middleware
+decode_jwt = Auth().decode_jwt
