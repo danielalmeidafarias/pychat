@@ -24,6 +24,19 @@ class StrongPassword(fields.Field):
 
 
 class CreateUserSchema(Schema):
-    name = fields.Str()
-    email = fields.Email()
-    password = StrongPassword()
+    name = fields.Str(required=True)
+    email = fields.Email(required=True)
+    password = StrongPassword(required=True)
+
+
+class UpdateUserSchema(Schema):
+    def __init__(self):
+        super().__init__()
+        self.strict = True
+
+    name = fields.Str(allow_none=True)
+    email = fields.Email(allow_none=True)
+    password = StrongPassword(allow_none=True)
+    friends = fields.Str(allow_none=True)
+    sent_friendship_request = fields.Str(allow_none=True)
+    friendship_request = fields.Str(allow_none=True)
