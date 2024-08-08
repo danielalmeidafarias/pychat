@@ -4,13 +4,15 @@ from flask_restx import Api
 from app.db import db
 from app.user.user import user_namespace
 from app.auth.auth import auth_namespace
+from app.friendship_request.friendship_request import friendship_request_namespace
 import datetime
 import jwt
 import os
+from app.user.user_repository import UserRepository
 
 
 @pytest.fixture
-def created_user(client):
+def user(client):
     response = client.post('/user', json={
         "email": "daniel@email.com",
         "name": "Daniel",
@@ -19,10 +21,22 @@ def created_user(client):
 
     return response.json
 
-@pytest.fixture()
-def access_token():
+
+@pytest.fixture
+def user2(client):
+    response = client.post('/user', json={
+        "email": "daniel2@email.com",
+        "name": "Daniel2",
+        "password": "Daniel@123"
+    })
+
+    return response.json
+
+
+@pytest.fixture
+def access_token(user):
     payload = {
-        "user_id": "a13ee687-8dcb-4c34-9881-5ab6b3bdd9f4",
+        "user_id": str(user['id']), ''
         "expires_at": str(datetime.datetime.now() + datetime.timedelta(hours=1))
     }
 
@@ -31,6 +45,14 @@ def access_token():
         key=os.getenv('JWT_SECRET')
     )
 
+    return access_token
+
+
+@pytest.fixture
+def user_repository():
+    user_repository = UserRepository(db)
+
+    return user_repository
 
 @pytest.fixture
 def app():
@@ -43,6 +65,7 @@ def app():
 
     api.add_namespace(user_namespace)
     api.add_namespace(auth_namespace)
+    api.add_namespace(friendship_request_namespace)
 
     with app.app_context():
         db.create_all()
