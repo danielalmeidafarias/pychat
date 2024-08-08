@@ -1,6 +1,6 @@
 from flask import request
 from flask_restx import Resource, Namespace
-from sqlalchemy.exc import IntegrityError, NoResultFound
+from sqlalchemy.exc import IntegrityError, NoResultFound, OperationalError
 import bcrypt
 from .model import UserModel
 from .schemas import CreateUserSchema
@@ -12,13 +12,14 @@ from app.db import db
 from app.middlewares.auth_middleware import auth_middleware
 from app.middlewares.blocked_ip_middleware import blocked_ip_middleware
 from app.middlewares.ddos_protect_middleware import ddos_protect_middleware
+from .user_repository import UserRepository
 
 
 user_namespace = Namespace('user', 'User Route')
 requests = UserRequestModels(user_namespace)
 responses = UserResponseModels(user_namespace)
 common_responses = CommonResponseModels(user_namespace)
-
+user_repository = UserRepository(db)
 
 @user_namespace.route('')
 @user_namespace.response(code=500, model=common_responses.internal_error, description='Something went wrong')
@@ -42,13 +43,13 @@ class UserResource(Resource):
 
         if user_id:
             try:
-                user = db.session.execute(db.select(UserModel).where(UserModel.id == user_id)).scalar_one()
+                user = user_repository.get(user_id)
                 return {
                     "user": {
-                        "id": user.id,
-                        "name": user.name
-                    }
-                },  200
+                        "id": user['id'],
+                        "name": user['name']
+                    },
+                }, 200
             except NoResultFound:
                 return {"message": "No user with this credentials was found"}, 400
 
@@ -57,12 +58,13 @@ class UserResource(Resource):
                 return {"message": "I'm sorry, something went wrong. Try again later"}, 500
         else:
             try:
-                data = db.session.execute(db.select(UserModel)).scalars().all()
-                users = [{"id": user.id, "name": user.name} for user in data]
-                return {"users": users}, 200
+                users = user_repository.get_all()
+                return {
+                    "users": users
+                }, 200
             except Exception as err:
                 print(err)
-                return {"message": "I'm sorry, something went wrong. Try again later"}, 500
+                return {"message": "Something went wrong, try again later"}, 500
 
     @user_namespace.expect(requests.crate_user)
     @user_namespace.response(model=responses.post_201, description="Created!", code=201)
