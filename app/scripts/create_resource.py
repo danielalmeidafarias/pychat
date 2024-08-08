@@ -46,7 +46,7 @@ else:
             "\n"
             "    def post(self):\n"
             "        data = request.get_json()\n"
-            f"        schema = Get{name.capitalize()}Schema()\n"
+            f"        schema = Create{name.capitalize()}Schema()\n"
             "        validated_data = schema.dump(data)\n"
             "\n"
             "        try:\n"
@@ -89,13 +89,39 @@ else:
             "\n"
             "    __tablename__ = 'user'\n"
             "\n"
-            "    id: Mapped[str] = mapped_column(primary_key=True, default=str(uuid.uuid4()))\n"
+            "    id: Mapped[str] = mapped_column(primary_key=True)\n"
              "\n"
             "    def __repr__(self) -> str:\n"
             '        return f"{{id:{self.id}}}"\n'
             "\n"
         ])
         model_file.close()
+
+        repository_file = open(f"{folder_path}/repository.py", 'w')
+        repository_file.writelines([
+            "from flask_sqlalchemy import SQLAlchemy\n"
+            "\n"
+            "\n"
+            f"class {name.capitalize()}Repository():\n"
+            "    def __init__(self, db: SQLAlchemy):\n"
+            "        self.db = db\n"
+            "\n"
+            f"    def create(self, {name}_id: str):\n"
+            "        pass\n"
+            "\n"
+            f"    def get(self, {name}_id: str):\n"
+            "        pass\n"
+            "\n"
+            "    def get_all(self):\n"
+            "        pass\n"
+            "\n"
+            f"    def update(self, {name}_id: str):\n"
+            "        pass\n"
+            "\n"
+            f"    def delete(self, {name}_id: str):\n"
+            "        pass\n"
+            "\n"
+        ])
 
         schemas_file = open(f"{folder_path}/schemas.py", 'w')
         schemas_file.writelines([
