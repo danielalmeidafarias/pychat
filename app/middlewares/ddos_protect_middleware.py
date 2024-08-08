@@ -22,7 +22,7 @@ class DDOSProtectMiddleware:
                     'first_request': datetime_to_string(datetime.now()),
                     'last_request': datetime_to_string(datetime.now()),
                 })
-                r.hexpireat(f"ip_address:{ip_address}", datetime.now() + timedelta(minutes=1))
+                r.expireat(f"ip_address:{ip_address}", datetime.now() + timedelta(minutes=1))
 
                 return func(self)
 
@@ -38,7 +38,7 @@ class DDOSProtectMiddleware:
                     'first_request': first_request,
                     'last_request': datetime_to_string(datetime.now()),
                 })
-                r.hexpireat(f"ip_address:{ip_address}", datetime.now() + timedelta(minutes=1))
+                r.expireat(f"ip_address:{ip_address}", datetime.now() + timedelta(minutes=1))
 
                 requests_per_second = (int(requests) + 1) / seconds_since_first_request
 
