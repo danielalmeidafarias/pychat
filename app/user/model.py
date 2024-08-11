@@ -20,10 +20,7 @@ class UserModel(db.Model):
     name: Mapped[str] = mapped_column()
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[bytes] = mapped_column()
-
     friends: Mapped[str] = mapped_column(default='')
-    friendship_request: Mapped[str] = mapped_column(default='')
-    sent_friendship_request: Mapped[str] = mapped_column(default='')
 
     def __repr__(self) -> str:
         return f"{{id:{self.id}, \
@@ -31,6 +28,4 @@ class UserModel(db.Model):
         email: {self.email}, \
         password: {self.password}, \
         friends:{self.friends}, \
-        friendship_request: {self.friendship_request} \
-        sent_friendship_request: {self.friendship_request} \
         }}"
