@@ -1,22 +1,16 @@
 from flask import request
 from functools import wraps
-import jwt
 import datetime
-import os
 from dotenv import load_dotenv
 load_dotenv()
+from ..auth.functions.functions import AuthFunctions
 
+auth_functions = AuthFunctions()
 
 class Auth:
     def __init__(self):
+        self.decode_jwt = auth_functions.decode_jwt
         pass
-
-
-    @staticmethod
-    def decode_jwt(authorization_header: str):
-        decoded_jwt = jwt.decode(authorization_header, os.getenv('JWT_SECRET'), "HS256")
-        return decoded_jwt
-
 
     def middleware(self, func):
         """
@@ -46,4 +40,3 @@ class Auth:
 
 
 auth_middleware = Auth().middleware
-decode_jwt = Auth().decode_jwt
