@@ -1,18 +1,15 @@
-import os
 import uuid
-import jwt
 from flask import request
 from flask_restx import Resource, Namespace
 from sqlalchemy.exc import IntegrityError, NoResultFound, OperationalError
 import bcrypt
-from .model import UserModel
 from .schemas import CreateUserSchema
 from marshmallow.exceptions import ValidationError
 from .docs.response_models import UserResponseModels
 from .docs.request_models import UserRequestModels
 from ..common.docs.response_models import CommonResponseModels
 from app.db import db
-from app.middlewares.auth_middleware import auth_middleware, decode_jwt
+from app.auth.functions.functions import AuthFunctions
 from app.middlewares.blocked_ip_middleware import blocked_ip_middleware
 from app.middlewares.ddos_protect_middleware import ddos_protect_middleware
 from .user_repository import UserRepository
@@ -23,6 +20,7 @@ requests = UserRequestModels(user_namespace)
 responses = UserResponseModels(user_namespace)
 common_responses = CommonResponseModels(user_namespace)
 user_repository = UserRepository(db)
+auth_functions = AuthFunctions()
 
 @user_namespace.route('')
 @user_namespace.response(code=500, model=common_responses.internal_error, description='Something went wrong')
