@@ -4,10 +4,7 @@ from flask import request
 from .schemas import SignInSchema
 from marshmallow import ValidationError
 from ..user.model import UserModel
-import bcrypt
 from dotenv import load_dotenv
-import os
-import jwt
 import datetime
 from .docs.response_models import AuthResponseModels
 from .docs.request_models import AuthRequestModels
@@ -22,7 +19,10 @@ auth_namespace = Namespace(name='auth', description='Authorization route')
 requests = AuthRequestModels(auth_namespace)
 responses = AuthResponseModels(auth_namespace)
 common_responses = CommonResponseModels(auth_namespace)
+from .functions.functions import AuthFunctions
 
+
+auth_functions = AuthFunctions()
 
 @auth_namespace.route('')
 @auth_namespace.response(code=500, model=common_responses.internal_error, description='Something went wrong')
@@ -51,23 +51,12 @@ class AuthResource(Resource):
                 "message": "No user with this credentials was found, please check the email"
             }, 404
 
-        is_password_correct = bcrypt.checkpw(
-            password=str.encode(validated_data["password"]),
-            hashed_password=user.password
-        )
+        is_password_correct = auth_functions.is_password_correct(validated_data['password'], user.password)
 
         if is_password_correct:
             r.delete(f"login_count:{user.id}")
 
-            payload = {
-                "user_id": str(user.id),
-                "expires_at": str(datetime.datetime.now() + datetime.timedelta(hours=1))
-            }
-
-            access_token = jwt.encode(
-                payload=payload,
-                key=os.getenv('JWT_SECRET')
-            )
+            access_token = auth_functions.get_access_token(user.id)
 
             return {
                 "access_token": access_token
