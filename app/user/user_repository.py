@@ -27,8 +27,6 @@ class UserRepository():
                 "email": user.email,
                 "password": user.password,
                 "friends": user.friends,
-                "friendship_request": user.friendship_request,
-                "sent_friendship_request": user.sent_friendship_request
         }
 
     def get_all(self):
@@ -41,6 +39,20 @@ class UserRepository():
         validated_data = schema.dump(update_data)
 
         (self.db.session.query(UserModel).where(UserModel.id == user_id).update(validated_data))
+
+        self.db.session.commit()
+
+    def add_friend(self, user_id, friend_id):
+        user_friends = self.get(user_id)['friends']
+        friend_friends = self.get(friend_id)['friends']
+
+        self.update(user_id, {
+            "friends": user_friends + friend_id
+        })
+
+        self.update(friend_id, {
+            "friends": friend_friends + user_id
+        })
 
     def delete(self):
         pass
