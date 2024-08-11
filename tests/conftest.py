@@ -9,6 +9,7 @@ import datetime
 import jwt
 import os
 from app.user.user_repository import UserRepository
+from app.friendship_request.repository import FriendshipRequestRepository
 
 
 @pytest.fixture
@@ -36,7 +37,7 @@ def user2(client):
 @pytest.fixture
 def access_token(user):
     payload = {
-        "user_id": str(user['id']), ''
+        "user_id": str(user['id']),
         "expires_at": str(datetime.datetime.now() + datetime.timedelta(hours=1))
     }
 
@@ -53,6 +54,12 @@ def user_repository():
     user_repository = UserRepository(db)
 
     return user_repository
+
+@pytest.fixture
+def friendship_request_repository():
+    friendship_request_repository = FriendshipRequestRepository(db)
+
+    return friendship_request_repository
 
 @pytest.fixture
 def app():
@@ -73,7 +80,22 @@ def app():
         db.drop_all()
 
 
-@pytest.fixture()
+@pytest.fixture
 def client(app):
     return app.test_client()
 
+
+@pytest.fixture
+def friendship_request(client, user, user2, access_token, friendship_request_repository):
+    sender_id = user['id']
+    recipient_id = user2['id']
+
+    client.post("/friendship_request", headers={
+        'Authorization': access_token
+    }, json={
+        'recipient_id': recipient_id
+    })
+
+    friendship_request = friendship_request_repository.get_one(recipient_id=recipient_id, sender_id=sender_id)
+
+    return friendship_request
