@@ -1,14 +1,25 @@
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, ValidationError
 
 
 class CreateFriendshipRequestSchema(Schema):
-    recipient_id = fields.Str()
+    id = fields.UUID()
+    sender_id = fields.UUID()
+    recipient_id = fields.UUID()
+
 
 class GetFriendshipRequestSchema(Schema):
     pass
 
+
+class ValidStatus(fields.Field):
+    def _deserialize(self, value, attr, data, **kwargs):
+        if data['status'] != 'accepted' and data['status'] != 'refused':
+            raise ValidationError("status must be 'accepted' or 'refused")
+
+
 class UpdateFriendshipRequestSchema(Schema):
-    pass
+    status = ValidStatus(required=True)
+
 
 class DeleteFriendshipRequestSchema(Schema):
     pass
