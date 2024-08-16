@@ -1,7 +1,4 @@
-import logging
 from marshmallow import Schema, fields
-from app.db import db
-from app.user.model import UserModel
 import bcrypt
 
 
