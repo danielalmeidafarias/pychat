@@ -9,10 +9,10 @@ from .docs.response_models import Friendship_requestResponseModels
 from .docs.request_models import Friendship_requestRequestModels
 from app.common.docs.response_models import CommonResponseModels
 from ..middlewares.auth_middleware import auth_middleware
-from ..user.user_repository import UserRepository
+from ..user.repository import UserRepository
 from sqlalchemy.exc import NoResultFound, OperationalError
 from .repository import FriendshipRequestRepository
-from ..auth.functions.functions import AuthFunctions
+from ..auth.util import AuthFunctions
 
 friendship_request_namespace = Namespace('friendship_request', 'Friendship_request Route')
 requests = Friendship_requestRequestModels(friendship_request_namespace)
