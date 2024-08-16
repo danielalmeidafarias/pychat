@@ -8,7 +8,7 @@ from app.friendship_request.friendship_request import friendship_request_namespa
 import datetime
 import jwt
 import os
-from app.user.user_repository import UserRepository
+from app.user.repository import UserRepository
 from app.friendship_request.repository import FriendshipRequestRepository
 
 
