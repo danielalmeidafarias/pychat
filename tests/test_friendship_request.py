@@ -120,3 +120,36 @@ def test_accepted_friendship_request(client, user, user2, access_token, friendsh
     })
 
     assert response.status_code == 200
+
+
+def test_accepted_and_refused_request(client, user, user2, user3, user4,  access_token, friendship_request_repository):
+    friendship_request1_id = friendship_request_repository.create(id=str(uuid.uuid4()), sender_id=user2['id'], recipient_id=user['id']).id
+    friendship_request2_id = friendship_request_repository.create(id=str(uuid.uuid4()), sender_id=user3['id'], recipient_id=user['id']).id
+    friendship_request3_id = friendship_request_repository.create(id=str(uuid.uuid4()), sender_id=user4['id'], recipient_id=user['id']).id
+
+    client.put(f"/friendship_request/{friendship_request1_id}", headers={
+        "Authorization": access_token
+    }, json={
+        "status": 'accepted'
+    })
+    client.put(f"/friendship_request/{friendship_request2_id}", headers={
+        "Authorization": access_token
+    }, json={
+        "status": 'accepted'
+    })
+    client.put(f"/friendship_request/{friendship_request3_id}", headers={
+        "Authorization": access_token
+    }, json={
+        "status": 'refused'
+    })
+
+    response = client.get(f"/friendship_request?status=accepted", headers={
+        'Authorization': access_token
+    })
+
+    assert response.json[0]['recipient_id'] == user['id'] and \
+           response.json[0]['sender_id'] == user2['id'] and \
+           response.json[0]['status'] == 'accepted' and \
+           response.json[1]['recipient_id'] == user['id'] and \
+           response.json[1]['sender_id'] == user3['id'] and \
+           response.json[1]['status'] == 'accepted'
