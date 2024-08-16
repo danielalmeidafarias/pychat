@@ -35,6 +35,28 @@ def user2(client):
 
 
 @pytest.fixture
+def user3(client):
+    response = client.post('/user', json={
+        "email": "daniel3@email.com",
+        "name": "Daniel3",
+        "password": "Daniel@123"
+    })
+
+    return response.json
+
+
+@pytest.fixture
+def user4(client):
+    response = client.post('/user', json={
+        "email": "daniel4@email.com",
+        "name": "Daniel4",
+        "password": "Daniel@123"
+    })
+
+    return response.json
+
+
+@pytest.fixture
 def access_token(user):
     payload = {
         "user_id": str(user['id']),
