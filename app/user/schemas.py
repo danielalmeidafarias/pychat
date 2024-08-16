@@ -37,4 +37,3 @@ class UpdateUserSchema(Schema):
     name = fields.Str(allow_none=True)
     email = fields.Email(allow_none=True)
     password = StrongPassword(allow_none=True)
-    friends = fields.Str(allow_none=True)
