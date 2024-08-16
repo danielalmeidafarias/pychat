@@ -4,7 +4,6 @@ from flask import request
 from flask_restx import Resource, Namespace
 from app.db import db
 from marshmallow.exceptions import ValidationError
-from .model import FriendshipRequestModel
 from .schemas import GetFriendshipRequestSchema, CreateFriendshipRequestSchema, UpdateFriendshipRequestSchema, DeleteFriendshipRequestSchema
 from .docs.response_models import Friendship_requestResponseModels
 from .docs.request_models import Friendship_requestRequestModels
@@ -31,18 +30,18 @@ auth_functions = AuthFunctions()
 @friendship_request_namespace.route('')
 class Friendship_requestResource(Resource):
     def get(self):
-        received = request.args.get('received')
+        status = request.args.get('status')
         sent = request.args.get('sent')
         user_id = auth_functions.decode_jwt((request.headers.get('Authorization')))['user_id']
 
-        if bool(received) and bool(sent) or not bool(received) and not bool(sent):
-            friendship_requests = friendship_request_repository.get_sent(user_id)
+        if sent == 'true':
+            friendship_requests = friendship_request_repository.get_sent(user_id, status)
             return friendship_requests
-        elif bool(received):
-            friendship_requests = friendship_request_repository.get_received(user_id)
+        elif sent == 'false':
+            friendship_requests = friendship_request_repository.get_received(user_id, status)
             return friendship_requests
         else:
-            friendship_requests = friendship_request_repository.get_sent(user_id)
+            friendship_requests = friendship_request_repository.get_all(user_id, status)
             return friendship_requests
 
     def post(self):
@@ -137,16 +136,14 @@ class UniqueFriendship_requestResource(Resource):
             }, 400
 
         if validated_data['status'] == 'accepted':
-            friendship_request_repository.update(friendship_request['id'],
-                                                 status='accepted', recipient_id=user_id)
+            friendship_request_repository.update(friendship_request['id'], status='accepted')
 
             user_repository.add_friend(friendship_request['recipient_id'], friendship_request['sender_id'])
             return {
                 "message": 'friendship request successfully accepted'
             }, 200
         elif validated_data['status'] == 'refused':
-            friendship_request_repository.update(friendship_request['id'],
-                                                 status='refused', recipient_id='')
+            friendship_request_repository.update(friendship_request['id'], status='refused')
 
             return {
                 "message": 'friendship request successfully refused'
