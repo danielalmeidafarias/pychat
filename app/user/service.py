@@ -20,6 +20,9 @@ class UserRepositoryInterface(ABC):
     def get_one(self, user_id):
         pass
 
+    def get_one_by_email(self, email):
+        pass
+
     @abstractmethod
     def get_all(self):
         pass

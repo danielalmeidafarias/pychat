@@ -32,6 +32,16 @@ class UserRepository(UserRepositoryInterface):
                 "friends": user.friends,
         }
 
+    def get_one_by_email(self, email):
+        user = self.db.session.execute(self.db.select(User).filter_by(email=email)).scalar_one()
+        return {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "password": user.password,
+            "friends": user.friends,
+        }
+
     def get_all(self):
         data = self.db.session.execute(self.db.select(User)).scalars().all()
         users = [{"id": user.id, "name": user.name} for user in data]

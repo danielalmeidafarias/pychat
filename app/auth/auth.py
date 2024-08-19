@@ -8,13 +8,15 @@ from ..middlewares.blocked_ip_middleware import blocked_ip_middleware
 from ..middlewares.ddos_protect_middleware import ddos_protect_middleware
 from app.db import db, r
 from .service import AuthService
+from ..user.repository import UserRepository
 
 load_dotenv()
 auth_namespace = Namespace(name='auth', description='Authorization route')
 requests = AuthRequestModels(auth_namespace)
 responses = AuthResponseModels(auth_namespace)
 common_responses = CommonResponseModels(auth_namespace)
-auth_service = AuthService(db=db, r=r)
+user_repository = UserRepository(db)
+auth_service = AuthService(user_repository, r=r)
 
 
 @auth_namespace.route('')
@@ -28,5 +30,5 @@ class AuthResource(Resource):
     @auth_namespace.expect(requests.signin)
     @auth_namespace.response(model=responses.post_200, description="Success", code=200)
     def post(self):
-        return auth_service.signIn(request=request)
+        return auth_service.sign_in(request=request)
 
