@@ -58,7 +58,7 @@ def test_weak_password_error(client):
 
 
 def test_created_user_in_db(client, user, user_repository):
-    db_user = user_repository.get(user['id'])
+    db_user = user_repository.get_one(user['id'])
 
     assert db_user['id'] == user['id'] and \
            db_user['email'] == user['email'] and \

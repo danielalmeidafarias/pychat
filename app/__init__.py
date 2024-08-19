@@ -4,7 +4,8 @@ from .db import db
 from .user.user import user_namespace
 from .auth.auth import auth_namespace
 from .friendship_request.friendship_request import friendship_request_namespace
-
+from .chat.model import Chat
+from .message.model import Message
 
 def create_app():
     app = Flask(__name__)

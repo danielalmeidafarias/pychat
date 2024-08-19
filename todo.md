@@ -1,7 +1,7 @@
 # Todo
 
 ## Login and Security
-1. - [] Implement a DDOS protection
+1. - [x] Implement a DDOS protection
 2. - [] Implement two factory login feature
 3. - [] Implement password recovery feature
 

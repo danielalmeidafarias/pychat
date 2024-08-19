@@ -5,11 +5,6 @@ friendship = db.Table('friendship',
                       db.Column('friend_id', db.String, db.ForeignKey('user.id'), primary_key=True)
                       )
 
-chat_members = db.Table('chat_members',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('chat_id', db.Integer, db.ForeignKey('chat.id'), primary_key=True)
-)
-
 class User(db.Model):
     def __init__(self, user_id: str, name: str, email: str, password: bytes):
         self.id = user_id
@@ -29,10 +24,6 @@ class User(db.Model):
 
     sent_requests = db.relationship('FriendshipRequest', backref='sender', lazy=True, foreign_keys='FriendshipRequest.sender_id')
     received_requests = db.relationship('FriendshipRequest', backref='receiver', lazy=True, foreign_keys='FriendshipRequest.receiver_id')
-
-    chats = db.relationship('Chat', primaryjoin=id==chat_members.c.user_id, secondaryjoin=id==chat_members.c.chat_id,
-                            backref=db.backref('chat_of'),secondary=chat_members)
-
     messages = db.relationship('Message', backref='user', lazy=True)
 
     def __repr__(self) -> str:
