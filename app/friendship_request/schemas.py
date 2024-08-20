@@ -2,9 +2,8 @@ from marshmallow import Schema, fields, ValidationError
 
 
 class CreateFriendshipRequestSchema(Schema):
-    id = fields.UUID()
     sender_id = fields.UUID()
-    recipient_id = fields.UUID()
+    receiver_id = fields.UUID()
 
 
 class GetFriendshipRequestSchema(Schema):

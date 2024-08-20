@@ -1,19 +1,19 @@
 import itertools
-
 from flask_sqlalchemy import SQLAlchemy
 from .model import FriendshipRequest
-from itertools import chain
+from uuid import uuid4 as uuid
+from .service import FriendshipRequestRepositoryInterface
 
 
-class FriendshipRequestRepository():
+class FriendshipRequestRepository(FriendshipRequestRepositoryInterface):
     def __init__(self, db: SQLAlchemy):
         self.db = db
 
-    def create(self, id: str, sender_id: str, recipient_id: str):
+    def create(self, sender_id: str, receiver_id: str):
         friendship_request = FriendshipRequest(
-            id=id,
+            id=str(uuid()),
             sender_id=sender_id,
-            recipient_id=recipient_id
+            receiver_id=receiver_id
         )
 
         self.db.session.add(friendship_request)
@@ -21,22 +21,21 @@ class FriendshipRequestRepository():
 
         return friendship_request
 
-    def get_one(self, sender_id: str, recipient_id: str):
+    def get_one(self, sender_id: str, receiver_id: str):
         friendship_request = (self.db.session.query(FriendshipRequest)
                               .where(FriendshipRequest.sender_id == sender_id and
-                                     FriendshipRequest.recipient_id == recipient_id).one_or_none())
+                                     FriendshipRequest.receiver_id == receiver_id).one_or_none())
 
         return friendship_request
 
     def get_one_by_id(self, id):
         data = self.db.session.execute(
-            self.db.select(FriendshipRequest).
-            where(FriendshipRequest.id == id)).scalar_one()
+            self.db.select(FriendshipRequest).where(FriendshipRequest.id == id)).scalar_one()
 
         return {
             "id": data.id,
             "sender_id": data.sender_id,
-            "recipient_id": data.recipient_id,
+            "receiver_id": data.receiver_id,
             "status": data.status
         }
 
@@ -55,7 +54,7 @@ class FriendshipRequestRepository():
             {
                 "id": request.id,
                 "sender_id": request.sender_id,
-                "recipient_id": request.recipient_id,
+                "receiver_id": request.receiver_id,
                 "status": request.status
             }
             for request in data
@@ -63,22 +62,22 @@ class FriendshipRequestRepository():
 
         return friendship_requests
 
-    def get_received(self, recipient_id, status: str or None):
+    def get_received(self, receiver_id, status: str or None):
         if status is None:
             data = self.db.session.execute(
                 self.db.select(FriendshipRequest).
-                where(FriendshipRequest.recipient_id == recipient_id)).scalars()
+                where(FriendshipRequest.receiver_id == receiver_id)).scalars()
         else:
             data = self.db.session.execute(
                 self.db.select(FriendshipRequest).
-                where(FriendshipRequest.recipient_id == recipient_id,
+                where(FriendshipRequest.receiver_id == receiver_id,
                       FriendshipRequest.status == status)).scalars()
 
         friendship_requests = [
             {
                 "id": request.id,
                 "sender_id": request.sender_id,
-                "recipient_id": request.recipient_id,
+                "receiver_id": request.receiver_id,
                 "status": request.status
             }
             for request in data
@@ -88,7 +87,7 @@ class FriendshipRequestRepository():
 
     def get_all(self, user_id, status: str or None):
         sent = self.get_sent(sender_id=user_id, status=status)
-        received = self.get_received(recipient_id=user_id, status=status)
+        received = self.get_received(receiver_id=user_id, status=status)
 
 
         total = []
@@ -97,7 +96,7 @@ class FriendshipRequestRepository():
 
         return total
 
-    def update(self, friendship_request_id: str, status):
+    def update(self, friendship_request_id: str, status: str):
         (self.db.session.query(FriendshipRequest).where(FriendshipRequest.id == friendship_request_id)
          .update({
             "status": status,

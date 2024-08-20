@@ -47,7 +47,8 @@ class UserService:
                 response = make_response({
                     "user": {
                         "id": user['id'],
-                        "name": user['name']
+                        "name": user['name'],
+                        "friends": [{"user_id": user.id, "user_name": user.name} for user in user['friends']]
                     },
                 })
                 response.status_code = 200

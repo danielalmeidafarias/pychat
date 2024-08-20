@@ -9,6 +9,7 @@ import datetime
 import jwt
 import os
 from app.user.repository import UserRepository
+from app.friendship.repository import FriendshipRepository
 from app.friendship_request.repository import FriendshipRequestRepository
 
 
@@ -76,6 +77,13 @@ def user_repository():
     user_repository = UserRepository(db)
 
     return user_repository
+
+
+@pytest.fixture
+def friendship_repository():
+    friendship_repository = FriendshipRepository(db)
+
+    return friendship_repository
 
 @pytest.fixture
 def friendship_request_repository():

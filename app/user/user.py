@@ -25,6 +25,7 @@ user_service = UserService(user_repository, auth_functions)
 @user_namespace.response(code=401, model=common_responses.unauthorized, description='Unauthorized')
 @user_namespace.response(code=404, model=common_responses.no_user_found, description='No user found')
 class UserResource(Resource):
+
     @auth_middleware
     @ddos_protect_middleware
     @blocked_ip_middleware

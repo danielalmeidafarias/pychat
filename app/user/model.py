@@ -1,9 +1,6 @@
 from app.db import db
+from ..friendship.model import friendship_table
 
-friendship = db.Table('friendship',
-                      db.Column('user_id', db.String, db.ForeignKey('user.id'), primary_key=True),
-                      db.Column('friend_id', db.String, db.ForeignKey('user.id'), primary_key=True)
-                      )
 
 class User(db.Model):
     def __init__(self, user_id: str, name: str, email: str, password: bytes):
@@ -17,9 +14,9 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.LargeBinary(128), nullable=False)
 
-    friends = db.relationship('User', secondary=friendship,
-                              primaryjoin=id==friendship.c.user_id,
-                              secondaryjoin=id==friendship.c.friend_id,
+    friends = db.relationship('User', secondary=friendship_table,
+                              primaryjoin=id==friendship_table.c.user_id,
+                              secondaryjoin=id==friendship_table.c.friend_id,
                               backref=db.backref('friend_of', lazy='dynamic'))
 
     sent_requests = db.relationship('FriendshipRequest', backref='sender', lazy=True, foreign_keys='FriendshipRequest.sender_id')
