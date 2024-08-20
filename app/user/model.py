@@ -1,5 +1,7 @@
 from app.db import db
 from ..friendship.model import friendship_table
+from ..chat_members.model import chat_members
+from ..chat.model import Chat
 
 
 class User(db.Model):
@@ -21,6 +23,13 @@ class User(db.Model):
 
     sent_requests = db.relationship('FriendshipRequest', backref='sender', lazy=True, foreign_keys='FriendshipRequest.sender_id')
     received_requests = db.relationship('FriendshipRequest', backref='receiver', lazy=True, foreign_keys='FriendshipRequest.receiver_id')
+
+    chats = db.relationship('Chat',
+                            secondary=chat_members,
+                            primaryjoin=id == chat_members.c.user_id,
+                            secondaryjoin=Chat.id == chat_members.c.chat_id,
+                            backref=db.backref('members', lazy='dynamic'))
+
     messages = db.relationship('Message', backref='user', lazy=True)
 
     def __repr__(self) -> str:

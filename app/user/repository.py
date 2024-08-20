@@ -9,7 +9,6 @@ class UserRepository(UserRepositoryInterface):
         self.db = db
 
     def create(self, user_id: str, email: str, password: bytes, name: str):
-        print(email)
         new_user = User(
             user_id=user_id,
             email=email,
@@ -30,6 +29,7 @@ class UserRepository(UserRepositoryInterface):
                 "email": user.email,
                 "password": user.password,
                 "friends": user.friends,
+                "chats": user.chats
         }
 
     def get_one_by_email(self, email):

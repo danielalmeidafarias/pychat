@@ -2,7 +2,7 @@ from flask import request
 from flask_restx import Resource, Namespace
 from app.db import db
 from marshmallow.exceptions import ValidationError
-from .model import FriendshipModel
+from .model import friendship_table
 from .schemas import GetFriendshipSchema, CreateFriendshipSchema, UpdateFriendshipSchema, DeleteFriendshipSchema
 from .docs.response_models import FriendshipResponseModels
 from .docs.request_models import FriendshipRequestModels

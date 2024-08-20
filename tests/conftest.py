@@ -1,3 +1,5 @@
+from pyexpat.errors import messages
+
 import pytest
 from flask import Flask
 from flask_restx import Api
@@ -11,6 +13,9 @@ import os
 from app.user.repository import UserRepository
 from app.friendship.repository import FriendshipRepository
 from app.friendship_request.repository import FriendshipRequestRepository
+from app.chat.repository import ChatRepository
+from app.chat_members.repository import ChatMemberRepository
+from app.message.repository import MessageRepository
 
 
 @pytest.fixture
@@ -90,6 +95,24 @@ def friendship_request_repository():
     friendship_request_repository = FriendshipRequestRepository(db)
 
     return friendship_request_repository
+
+@pytest.fixture
+def chat_repository():
+    chat_repository = ChatRepository(db)
+
+    return chat_repository
+
+@pytest.fixture
+def chat_members_repository():
+    chat_members_repository = ChatMemberRepository(db)
+
+    return chat_members_repository
+
+@pytest.fixture
+def message_repository():
+    message_repository = MessageRepository(db)
+
+    return message_repository
 
 @pytest.fixture
 def app():

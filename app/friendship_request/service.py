@@ -6,6 +6,8 @@ from marshmallow.exceptions import ValidationError
 from ..user.service import UserRepositoryInterface
 from ..auth.util import AuthFunctions
 from ..friendship.repository import FriendshipRepository
+from ..chat.repository import ChatRepository
+from ..chat_members.repository import ChatMemberRepository
 
 class FriendshipRequestRepositoryInterface(ABC):
     @abstractmethod
@@ -45,12 +47,16 @@ class FriendshipRequestService:
     def __init__(self, friendship_request_repository: FriendshipRequestRepositoryInterface,
                  user_repository: UserRepositoryInterface,
                  auth_functions: AuthFunctions,
-                 friendship_repository: FriendshipRepository
+                 friendship_repository: FriendshipRepository,
+                 chat_repository: ChatRepository,
+                 chat_members_repository: ChatMemberRepository
                  ):
         self.friendship_request_repository = friendship_request_repository
         self.user_repository = user_repository
         self.auth_functions = auth_functions
         self.friendship_repository = friendship_repository
+        self.chat_repository = chat_repository
+        self.chat_members_repository = chat_members_repository
 
     def create(self, request: Request):
         receiver_id = request.get_json()['receiver_id']
@@ -83,9 +89,11 @@ class FriendshipRequestService:
                 "message": "No User Found"
             }, 404
 
-        for friend in sender_user['friends']:
-            if friend.id == receiver_id:
-                return {
+
+        already_friends = self.friendship_repository.get(user_id=sender_id, friend_id=receiver_id)
+
+        if already_friends is not None:
+            return {
                     "message": 'You are already friends',
                 }, 400
 
@@ -160,6 +168,11 @@ class FriendshipRequestService:
             self.friendship_request_repository.update(friendship_request_id, status='accepted')
 
             self.friendship_repository.create(user_id=user_id, friend_id=friendship_request['sender_id'])
+
+            # new_chat = self.chat_repository.create()
+            #
+            # self.chat_members_repository.create(chat_id=new_chat['id'], user_id=user_id)
+            # self.chat_members_repository.create(chat_id=new_chat['id'], user_id=friendship_request['sender_id'])
 
             return {
                 "message": 'friendship request successfully accepted'

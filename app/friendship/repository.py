@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from uuid import uuid4 as uuid
 from .model import friendship_table
+from sqlalchemy import and_
 
 
 class FriendshipRepository:
@@ -13,13 +14,12 @@ class FriendshipRepository:
         self.db.session.commit()
 
     def get(self, user_id: str, friend_id: str):
-        # friendship = (self.db.session.execute(friendship_table.select().where(user_id == user_id and friend_id == friend_id))
-        #               .one_or_none())
-
-        friendship = (
-                self.db.session.execute(friendship_table.select().where(user_id == 'b178edee-df43-4f83-b6c3-8520d893cddb')).all())
-
-        print(friendship)
+        friendship = (self.db.session.execute(
+            friendship_table.select().where(and_(
+                friendship_table.c.user_id == user_id,
+                friendship_table.c.friend_id == friend_id)
+            )
+        ).one_or_none())
 
         return friendship
 
