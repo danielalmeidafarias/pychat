@@ -2,7 +2,9 @@ from marshmallow import Schema, fields
 
 
 class CreateChatSchema(Schema):
-    pass
+    content = fields.String()
+    user_id = fields.String()
+    chat_id = fields.String()
 
 class GetChatSchema(Schema):
     pass

@@ -18,7 +18,13 @@ class ChatRepository:
         }
 
     def get(self, chat_id: str):
-        pass
+        chat = self.db.session.execute(self.db.select(Chat).where(Chat.id == chat_id)).scalar_one()
+        return {
+            "chat_id": chat.id,
+            "members": [
+                {"id": member.id} for member in chat.chat_members
+            ]
+        }
 
     def get_all(self):
         pass

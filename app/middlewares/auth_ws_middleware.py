@@ -3,11 +3,12 @@ from functools import wraps
 import datetime
 from dotenv import load_dotenv
 from ..auth.util import AuthFunctions
+from flask_socketio import disconnect
 
 load_dotenv()
 
 
-class AuthMiddleware:
+class AuthWsMiddleware:
     def __init__(self):
         self.auth_functions = AuthFunctions
         pass
@@ -42,4 +43,4 @@ class AuthMiddleware:
         return wrapper
 
 
-auth_middleware = AuthMiddleware().middleware
+auth_ws_middleware = AuthWsMiddleware().middleware

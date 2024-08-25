@@ -1,7 +1,6 @@
 from sqlalchemy.exc import NoResultFound
-from app.user.model import User
 from app.auth.schemas import SignInSchema
-from flask import Request
+from flask import Request, make_response, redirect
 from marshmallow import ValidationError
 import datetime
 from redis import Redis
@@ -41,9 +40,10 @@ class AuthService:
 
             access_token = auth_functions.get_access_token(user['id'])
 
-            return {
-                "access_token": access_token
-            }, 200
+            response = make_response(redirect('/chat'))
+            response.set_cookie('Auth', access_token)
+
+            return response
         else:
             login_trying_count = self.r.get(f"login_count:{user['id']}")
 

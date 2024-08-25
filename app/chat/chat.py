@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, make_response, render_template, url_for
 from flask_restx import Resource, Namespace
 from app.db import db
 from marshmallow.exceptions import ValidationError
@@ -15,13 +15,15 @@ responses = ChatResponseModels(chat_namespace)
 common_responses = CommonResponseModels(chat_namespace)
 
 
+
 @chat_namespace.response(code=500, model=common_responses.internal_error, description='Something went wrong')
 @chat_namespace.response(code=400, model=common_responses.data_validation_error, description='Data Validation Error')
 @chat_namespace.response(code=409, model=common_responses.unauthorized, description='Unauthorized')
 @chat_namespace.route('')
 class ChatResource(Resource):
     def get(self):
-        pass
+        response = make_response(render_template('index.html'), 200)
+        return response
 
     def post(self):
         data = request.get_json()
@@ -50,3 +52,4 @@ class UniqueChatResource(Resource):
 
     def delete(self):
         pass
+

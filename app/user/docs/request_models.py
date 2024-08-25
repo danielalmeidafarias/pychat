@@ -1,6 +1,5 @@
 from flask_restx import fields, Namespace
 
-
 class UserRequestModels:
     def __init__(self, nm: Namespace):
         self.crate_user = nm.model('Create User', {

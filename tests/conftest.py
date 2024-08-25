@@ -1,5 +1,3 @@
-from pyexpat.errors import messages
-
 import pytest
 from flask import Flask
 from flask_restx import Api
@@ -16,7 +14,9 @@ from app.friendship_request.repository import FriendshipRequestRepository
 from app.chat.repository import ChatRepository
 from app.chat_members.repository import ChatMemberRepository
 from app.message.repository import MessageRepository
-
+from flask_socketio import test_client
+from flask_socketio.test_client import SocketIOTestClient
+from app.chat.websocket import Websocket
 
 @pytest.fixture
 def user(client):
@@ -114,6 +114,7 @@ def message_repository():
 
     return message_repository
 
+
 @pytest.fixture
 def app():
     app = Flask('test_app')
@@ -136,6 +137,18 @@ def app():
 @pytest.fixture
 def client(app):
     return app.test_client()
+
+
+@pytest.fixture
+def socketio(app):
+    socketio = Websocket(app)
+    return socketio
+
+
+@pytest.fixture
+def socketio_client(app, socketio):
+    websocket_client = SocketIOTestClient(app, socketio)
+    return websocket_client
 
 
 @pytest.fixture

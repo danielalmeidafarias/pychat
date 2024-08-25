@@ -16,4 +16,4 @@ class Chat(db.Model):
                             backref=db.backref('chat_of'), secondary=chat_members)
 
     def __repr__(self) -> str:
-        return f"{{id:{self.id}}}"
+        return f"{{id:{self.id}, chat_members:{self.chat_members}}}"
