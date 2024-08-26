@@ -18,7 +18,7 @@ class ChatRepository:
         }
 
     def get(self, chat_id: str):
-        chat = self.db.session.execute(self.db.select(Chat).where(Chat.id == chat_id)).scalar_one()
+        chat = self.db.session.execute(self.db.select(Chat).where(Chat.id == chat_id)).scalar_one_or_none()
         return {
             "chat_id": chat.id,
             "members": [

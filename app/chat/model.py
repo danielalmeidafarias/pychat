@@ -12,8 +12,8 @@ class Chat(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.now())
 
     messages = db.relationship('Message', backref='chat')
-    chat_members = db.relationship('Chat', primaryjoin=id==chat_members.c.user_id, secondaryjoin=id==chat_members.c.chat_id,
-                            backref=db.backref('chat_of'), secondary=chat_members)
+
+    chat_members = db.relationship('User', secondary=chat_members, overlaps="chats")
 
     def __repr__(self) -> str:
         return f"{{id:{self.id}, chat_members:{self.chat_members}}}"

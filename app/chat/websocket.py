@@ -1,12 +1,9 @@
-from flask_socketio.namespace import Namespace
 from flask_socketio import SocketIO
-import urllib.parse as urlparse
 from flask import request, Flask
 from ..auth.util import AuthFunctions
 from typing import List
 from ..chat.repository import ChatRepository
 from flask_sqlalchemy import SQLAlchemy
-from ..middlewares.auth_middleware import auth_middleware
 
 
 class ChatWebsocket(SocketIO):
@@ -18,13 +15,6 @@ class ChatWebsocket(SocketIO):
         self.connected = {}
         self.auth_functions = AuthFunctions()
         self.chat_repository = ChatRepository(db)
-        self.chat = {
-            "chat_id": "30509cb1-8786-487e-8a3a-cd1c449a4be5",
-            "chat_members": [
-                {"id": "1a98fb06-cafd-44a9-8edf-61315f578189"},
-                {"id": "b5184898-44ed-4867-bcf4-26b152e822a1"}
-            ]
-        }
 
     def register_handlers(self):
         @self.on('connect')
@@ -35,8 +25,6 @@ class ChatWebsocket(SocketIO):
             user_id = self.auth_functions.decode_jwt(authorization_header)['user_id']
 
             self.connected[user_id] = socketio_id
-
-            print(self.connected)
 
             print(f"{request.sid} connected successfully")
             self.emit("connected successfully")
@@ -73,11 +61,10 @@ class ChatWebsocket(SocketIO):
 
             chat_id = data['chat_id']
 
-            # chat = self.chat_repository.get(chat_id)
-            chat = self.chat
+            chat = self.chat_repository.get(chat_id)
 
-            for member in chat['chat_members']:
-                if self.connected[member['id']] is not None and member['id'] != user_id:
+            for member in chat['members']:
+                if member['id'] in self.connected:
                     self.send(data['content'], to=self.connected[member['id']])
 
             print(f"message received: {data['content']}")
