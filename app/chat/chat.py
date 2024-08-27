@@ -1,12 +1,11 @@
-from flask import request, make_response, render_template, url_for
+from flask import request, make_response, render_template
 from flask_restx import Resource, Namespace
-from app.db import db
 from marshmallow.exceptions import ValidationError
-from .model import Chat
-from .schemas import GetChatSchema, CreateChatSchema, UpdateChatSchema, DeleteChatSchema
+from .schemas import CreateChatSchema, UpdateChatSchema, DeleteChatSchema
 from .docs.response_models import ChatResponseModels
 from .docs.request_models import ChatRequestModels
 from app.common.docs.response_models import CommonResponseModels
+from ..middlewares.auth_middleware import auth_middleware
 
 
 chat_namespace = Namespace('chat', 'Chat Route')
@@ -15,14 +14,13 @@ responses = ChatResponseModels(chat_namespace)
 common_responses = CommonResponseModels(chat_namespace)
 
 
-
 @chat_namespace.response(code=500, model=common_responses.internal_error, description='Something went wrong')
 @chat_namespace.response(code=400, model=common_responses.data_validation_error, description='Data Validation Error')
 @chat_namespace.response(code=409, model=common_responses.unauthorized, description='Unauthorized')
 @chat_namespace.route('')
 class ChatResource(Resource):
     def get(self):
-        response = make_response(render_template('index.html'), 200)
+        response = make_response(render_template('chat.html'), 200)
         return response
 
     def post(self):

@@ -16,7 +16,6 @@ const messageSchema = zod.object({
 })
 
 const socket = io("http://localhost:5000", {
-    autoConnect: false,
     extraHeaders: {
         "Auth": auth_cookies
     }

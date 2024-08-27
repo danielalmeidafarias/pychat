@@ -10,12 +10,16 @@ from .message.model import Message
 from flask_socketio import SocketIO
 from .chat.websocket import ChatWebsocket
 from .db import db
+from flask_bootstrap import Bootstrap4
 
 
 def create_app():
     app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'SUPER SECRET KEY'
 
     socketio = ChatWebsocket(app, cors_allowed_origins="*", db=db)
+
+    bootstrap = Bootstrap4(app)
 
     api = Api(app)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///pychat.db"

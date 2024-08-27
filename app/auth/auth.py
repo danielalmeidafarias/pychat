@@ -1,6 +1,6 @@
 from flask_restx import Resource, Namespace
 from dotenv import load_dotenv
-from flask import request
+from flask import request, make_response, render_template, redirect, flash, url_for
 from .docs.response_models import AuthResponseModels
 from .docs.request_models import AuthRequestModels
 from ..common.docs.response_models import CommonResponseModels
@@ -9,6 +9,9 @@ from ..middlewares.ddos_protect_middleware import ddos_protect_middleware
 from app.db import db, r
 from .service import AuthService
 from ..user.repository import UserRepository
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, EqualTo, Email
 
 load_dotenv()
 auth_namespace = Namespace(name='auth', description='Authorization route')
@@ -32,3 +35,12 @@ class AuthResource(Resource):
     def post(self):
         return auth_service.sign_in(request=request)
 
+    def get(self):
+        class LoginForm(FlaskForm):
+            email = StringField('Email', validators=[DataRequired(), Email()])
+            password = PasswordField('Password', validators=[DataRequired()])
+            submit = SubmitField('Login')
+
+        form = LoginForm()
+
+        return make_response(render_template('login.html', form=form))
