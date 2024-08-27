@@ -32,7 +32,7 @@ class AuthWsMiddleware:
                 if expires_at < datetime.datetime.now():
                     raise Exception('Expired access_token')
 
-                return func(self)
+                return func()
 
             except Exception as err:
                 print(err)

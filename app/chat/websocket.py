@@ -3,7 +3,11 @@ from flask import request, Flask
 from ..auth.util import AuthFunctions
 from typing import List
 from ..chat.repository import ChatRepository
+from ..message.repository import MessageRepository
 from flask_sqlalchemy import SQLAlchemy
+from ..message.schemas import CreateMessageSchema
+from marshmallow.exceptions import ValidationError
+from ..middlewares.auth_ws_middleware import auth_ws_middleware
 
 
 class ChatWebsocket(SocketIO):
@@ -15,9 +19,11 @@ class ChatWebsocket(SocketIO):
         self.connected = {}
         self.auth_functions = AuthFunctions()
         self.chat_repository = ChatRepository(db)
+        self.message_repository = MessageRepository(db)
 
     def register_handlers(self):
         @self.on('connect')
+        @auth_ws_middleware
         def on_connect():
             socketio_id = request.sid
 
@@ -50,22 +56,37 @@ class ChatWebsocket(SocketIO):
 
         @self.on('message')
         def on_message(data):
-            # 1. midleware para autenticação
-            # 2. validação dos dados recebidos
-            # 3. verificar se o usuário destino está conectado
-            # se sim: enviar a mensagem e depois salvar no banco de dados
-            # se não apenas salvar no banco
-
             authorization_header = request.headers.get('Auth')
-            user_id = self.auth_functions.decode_jwt(authorization_header)['user_id']
 
+            user_id = self.auth_functions.decode_jwt(authorization_header)['user_id']
             chat_id = data['chat_id']
+
+            schema = CreateMessageSchema()
+
+            validated_data = schema.dump(data)
+
+            try:
+                schema.load(validated_data)
+            except ValidationError as err:
+                return {"message": "Data Validation Error!", "errors": err.messages}, 400
 
             chat = self.chat_repository.get(chat_id)
 
             for member in chat['members']:
-                if member['id'] in self.connected:
-                    self.send(data['content'], to=self.connected[member['id']])
+                if member['id'] in self.connected and member['id'] != user_id:
+                    self.send({
+                        "content": validated_data['content'],
+                        "user_id": user_id
+                    }, to=self.connected[member['id']])
+                    self.message_repository.create(
+                        chat_id=validated_data['chat_id'],
+                        user_id=user_id,
+                        content=validated_data['content'])
+                else:
+                    self.message_repository.create(
+                        chat_id=validated_data['chat_id'],
+                        user_id=user_id,
+                        content=validated_data['content'])
 
             print(f"message received: {data['content']}")
 
