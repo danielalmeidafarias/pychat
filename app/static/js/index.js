@@ -10,6 +10,11 @@ const received = document.getElementById('received')
 
 const auth_cookies = jsCookie.get('Auth')
 
+const messageSchema = zod.object({
+    content: zod.string(),
+    chat_id: zod.string().uuid(),
+})
+
 const socket = io("http://localhost:5000", {
     autoConnect: false,
     extraHeaders: {
@@ -21,12 +26,20 @@ send_button.addEventListener('click', () => {
     const content = document.getElementById('content').value
     const chat_id = document.getElementById('chat_id').value
 
-    const json = {
+    const message = {
         content,
         chat_id
     }
 
-    socket.send(json)
+    try {
+        messageSchema.parse(message)
+        socket.send(message)
+    }
+    catch (err) {
+        alert("Content must be a string and chat_id must be an valid UUID")
+    }
+
+
 })
 
 connect_button.addEventListener('click', () => {
@@ -38,5 +51,5 @@ disconnect_button.addEventListener('click', () => {
 })
 
 socket.addEventListener('message', (message) => {
-    received.value = message
+    received.value = message.content
 })
