@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, make_response, render_template
 from flask_restx import Resource, Namespace
 from app.db import db
 from marshmallow.exceptions import ValidationError
@@ -21,7 +21,8 @@ common_responses = CommonResponseModels(friendship_namespace)
 @friendship_namespace.route('')
 class FriendshipResource(Resource):
     def get(self):
-        pass
+        response = make_response(render_template('friends.html'))
+        return response
 
     def post(self):
         data = request.get_json()

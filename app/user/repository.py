@@ -1,5 +1,6 @@
 from .model import User
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import select
 from .schemas import UpdateUserSchema
 from .service import UserRepositoryInterface
 from typing import Optional
@@ -22,7 +23,7 @@ class UserRepository(UserRepositoryInterface):
         return new_user
 
     def get_one(self, user_id: str):
-        user = self.db.session.execute(self.db.select(User).where(User.id == user_id)).scalar_one()
+        user = self.db.session.execute(select(User).where(User.id == user_id)).scalar_one()
         return {
                 "id": user_id,
                 "name": user.name,

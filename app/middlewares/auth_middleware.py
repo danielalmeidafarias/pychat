@@ -1,4 +1,4 @@
-from flask import request, make_response
+from flask import request, make_response, redirect
 from functools import wraps
 import datetime
 from dotenv import load_dotenv

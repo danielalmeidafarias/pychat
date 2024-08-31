@@ -1,51 +1,60 @@
 {% extends 'base.html' %}
 
-{% block title %}Chat{% endblock %}
-
 {% block content %}
 <div class="row">
-    <!-- Left side: List of user's chats -->
     <div class="col-md-3">
-        <h4>Your Chats</h4>
+        <h4 class="text-dark-green">Your Chats</h4>
         <ul class="list-group">
             {% for chat in chats %}
-            <li class="list-group-item {% if request.args.get('chat_id') == chat.chat_id|string %} active {% endif %}">
-                <a href="{{ url_for('chat', username=username, chat_id=chat.chat_id) }}" class="text-decoration-none">
-                    {{ chat.name }}
+            <li class="list-group-item {% if request.args.get('chat_id') == chat.chat_id|string %} list-group-item-active {% else %} bg-light-gray {% endif %}">
+                <a href="{{ url_for('chat_chat_resource', id=chat['id']) }}" class="text-decoration-none {% if request.args.get('chat_id') == chat.chat_id|string %} text-white {% else %} text-dark-green {% endif %}">
+                    {{ chat.id }}
                 </a>
             </li>
             {% endfor %}
         </ul>
     </div>
 
-    <!-- Right side: Selected chat -->
+    {% if chat %}
     <div class="col-md-9">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header bg-light-green text-white">
                 <h4>Chat</h4>
             </div>
 
-            <!-- Chat messages with scrolling -->
-            <div class="card-body" id="chat-messages">
-                <ul class="list-unstyled">
-                    {% for message in messages %}
-                    <li class="mb-2">
-                        <strong>{{ message.sender }}:</strong> {{ message.message }}
-                    </li>
+            <!-- Scrollable chat body -->
+            <div class="card-body" id="chat-messages" style="max-height: 400px; overflow-y: auto;">
+                <ul id="message-list" class="list-unstyled">
+                    {% for message in chat['messages'] %}
+                        {% if message.user_id == user['id'] %}
+                        <li class="mb-2 d-flex justify-content-start">
+                            <div class="bg-light-gray text-dark-green p-2 rounded">
+                                {{ message.content }}
+                            </div>
+                        </li>
+                        {% else %}
+                        <li class="mb-2 d-flex justify-content-end">
+                            <div class="bg-dark-green text-white p-2 rounded">
+                                <strong>{{ message.user.name }}:</strong>
+                                {{ message.content }}
+                            </div>
+                        </li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
             </div>
 
-            <!-- Input form to send message -->
             <div class="card-footer">
-                <form method="POST">
-                    <div class="input-group">
-                        <input type="text" name="message" class="form-control" placeholder="Type your message...">
-                        <button class="btn btn-primary" type="submit">Send</button>
-                    </div>
-                </form>
+                <div class="input-group">
+                    <input type="text" id="content" name="message" class="form-control border-light-green" placeholder="Type your message...">
+                    <button id="send-btn" class="btn btn-purple">Send</button>
+                </div>
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
+
+<script type="module" src="../static/js/chat.js"></script>
+
 {% endblock %}

@@ -1,5 +1,4 @@
 import datetime
-from sqlalchemy.orm import Mapped
 from app.db import db
 
 class Message(db.Model):

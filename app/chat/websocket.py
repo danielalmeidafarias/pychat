@@ -4,6 +4,7 @@ from ..auth.util import AuthFunctions
 from typing import List
 from ..chat.repository import ChatRepository
 from ..message.repository import MessageRepository
+from ..user.repository import UserRepository
 from flask_sqlalchemy import SQLAlchemy
 from ..message.schemas import CreateMessageSchema
 from marshmallow.exceptions import ValidationError
@@ -20,6 +21,7 @@ class ChatWebsocket(SocketIO):
         self.auth_functions = AuthFunctions()
         self.chat_repository = ChatRepository(db)
         self.message_repository = MessageRepository(db)
+        self.user_repository = UserRepository(db)
 
     def register_handlers(self):
         @self.on('connect')
@@ -51,7 +53,6 @@ class ChatWebsocket(SocketIO):
                     index = connected_values.index(value)
                     self.connected.pop(connected_key[index])
 
-            print(self.connected)
             print(f"{request.sid} disconnected successfully")
 
         @self.on('message')
@@ -59,6 +60,8 @@ class ChatWebsocket(SocketIO):
             authorization_header = request.headers.get('Auth')
 
             user_id = self.auth_functions.decode_jwt(authorization_header)['user_id']
+            user = self.user_repository.get_one(user_id)
+
             chat_id = data['chat_id']
 
             schema = CreateMessageSchema()
@@ -76,17 +79,13 @@ class ChatWebsocket(SocketIO):
                 if member['id'] in self.connected and member['id'] != user_id:
                     self.send({
                         "content": validated_data['content'],
-                        "user_id": user_id
+                        "user_id": user_id,
+                        "user_name": user['name']
                     }, to=self.connected[member['id']])
-                    self.message_repository.create(
-                        chat_id=validated_data['chat_id'],
-                        user_id=user_id,
-                        content=validated_data['content'])
-                else:
-                    self.message_repository.create(
-                        chat_id=validated_data['chat_id'],
-                        user_id=user_id,
-                        content=validated_data['content'])
+
+            self.message_repository.create(
+                chat_id=validated_data['chat_id'],
+                user_id=user_id,
+                content=validated_data['content'])
 
             print(f"message received: {data['content']}")
-

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Main Content: Profile Page -->
+<div class="container my-5">
+    <h1 class="text-center text-dark-green">Profile Settings</h1>
+
+    <!-- User Photo -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-6 text-center">
+            <img src="https://via.placeholder.com/150" alt="User Photo" class="rounded-circle img-fluid mb-3">
+        </div>
+    </div>
+
+    <!-- Profile Info -->
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <!-- Name -->
+            <div class="mb-3">
+                <label for="name" class="form-label text-dark-green">Name</label>
+                <div class="input-group">
+                    <input type="text" id="name" class="readonly-input" value="John Doe" readonly>
+                    <button class="btn bg-light-green text-white btn-edit">Edit</button>
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+                <label for="email" class="form-label text-dark-green">Email</label>
+                <div class="input-group">
+                    <input type="email" id="email" class="readonly-input" value="johndoe@example.com" readonly>
+                    <button class="btn bg-light-green text-white btn-edit">Edit</button>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+                <label for="password" class="form-label text-dark-green">Password</label>
+                <div class="input-group">
+                    <input type="password" id="password" class="readonly-input" value="********" readonly>
+                    <button class="btn bg-light-green text-white btn-edit">Edit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../static/js/profile.js" type="module"></script>
+
+{% endblock %}

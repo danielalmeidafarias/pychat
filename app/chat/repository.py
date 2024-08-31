@@ -23,7 +23,8 @@ class ChatRepository:
             "chat_id": chat.id,
             "members": [
                 {"id": member.id} for member in chat.chat_members
-            ]
+            ],
+            "messages": chat.messages
         }
 
     def get_all(self):

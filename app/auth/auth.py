@@ -4,6 +4,7 @@ from flask import request, make_response, render_template, redirect, flash, url_
 from .docs.response_models import AuthResponseModels
 from .docs.request_models import AuthRequestModels
 from ..common.docs.response_models import CommonResponseModels
+from ..middlewares.auth_middleware import auth_middleware
 from ..middlewares.blocked_ip_middleware import blocked_ip_middleware
 from ..middlewares.ddos_protect_middleware import ddos_protect_middleware
 from app.db import db, r
@@ -35,12 +36,8 @@ class AuthResource(Resource):
     def post(self):
         return auth_service.sign_in(request=request)
 
+
     def get(self):
-        class LoginForm(FlaskForm):
-            email = StringField('Email', validators=[DataRequired(), Email()])
-            password = PasswordField('Password', validators=[DataRequired()])
-            submit = SubmitField('Login')
-
-        form = LoginForm()
-
-        return make_response(render_template('login.html', form=form))
+        return auth_service.authenticate(request=request)
+        # return redirect('/chat')
+        # return make_response(render_template('auth.html'))

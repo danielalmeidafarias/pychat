@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, make_response, render_template
 from flask_restx import Resource, Namespace
 from app.db import db
 from .docs.response_models import Friendship_requestResponseModels
@@ -41,7 +41,9 @@ friendship_request_service = FriendshipRequestService(
 @friendship_request_namespace.route('')
 class FriendshipRequestResource(Resource):
     def get(self):
-        return friendship_request_service.get(request)
+        response = make_response(render_template('friendship_request.html',))
+        # return friendship_request_service.get(request)
+        return response
 
     def post(self):
         return friendship_request_service.create(request)

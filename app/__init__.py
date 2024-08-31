@@ -1,10 +1,11 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_restx import Api
 from .db import db
-from .user.user import user_namespace
+from .user.user import user_namespace, account_namespace
 from .auth.auth import auth_namespace
 from .chat.chat import chat_namespace
 from .friendship_request.friendship_request import friendship_request_namespace
+from .friendship.friendship import friendship_namespace
 from .chat.model import Chat
 from .message.model import Message
 from flask_socketio import SocketIO
@@ -19,7 +20,9 @@ def create_app():
 
     socketio = ChatWebsocket(app, cors_allowed_origins="*", db=db)
 
-    bootstrap = Bootstrap4(app)
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return render_template('not_found.html'), 404
 
     api = Api(app)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///pychat.db"
@@ -30,6 +33,8 @@ def create_app():
     api.add_namespace(auth_namespace)
     api.add_namespace(friendship_request_namespace)
     api.add_namespace(chat_namespace)
+    api.add_namespace(friendship_namespace)
+    api.add_namespace(account_namespace)
 
     with app.app_context():
         db.create_all()

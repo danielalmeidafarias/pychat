@@ -13,7 +13,7 @@ class Chat(db.Model):
 
     messages = db.relationship('Message', backref='chat')
 
-    chat_members = db.relationship('User', secondary=chat_members, overlaps="chats")
+    # chat_members = db.relationship('User', secondary=chat_members, overlaps="chats")
 
     def __repr__(self) -> str:
         return f"{{id:{self.id}, chat_members:{self.chat_members}}}"
