@@ -4,6 +4,7 @@ import datetime
 import bcrypt
 from flask import Response, make_response
 
+
 class AuthFunctions:
     @staticmethod
     def decode_jwt(jwt_token: str):
@@ -47,3 +48,6 @@ class AuthFunctions:
                             expires=(datetime.datetime.now() + datetime.timedelta(hours=1)))
 
         return response
+
+
+auth_functions = AuthFunctions()

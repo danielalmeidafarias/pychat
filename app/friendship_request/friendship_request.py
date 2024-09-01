@@ -4,11 +4,9 @@ from app.db import db
 from .docs.response_models import Friendship_requestResponseModels
 from .docs.request_models import Friendship_requestRequestModels
 from app.common.docs.response_models import CommonResponseModels
-from ..chat_members.model import chat_members
-from ..middlewares.auth_middleware import auth_middleware
 from ..user.repository import UserRepository
 from .repository import FriendshipRequestRepository
-from ..auth.util import AuthFunctions
+from ..auth.util import auth_functions
 from .service import FriendshipRequestService
 from ..friendship.repository import FriendshipRepository
 from ..chat.repository import ChatRepository
@@ -21,7 +19,6 @@ responses = Friendship_requestResponseModels(friendship_request_namespace)
 common_responses = CommonResponseModels(friendship_request_namespace)
 user_repository = UserRepository(db)
 friendship_request_repository = FriendshipRequestRepository(db)
-auth_functions = AuthFunctions()
 chat_repository = ChatRepository(db)
 chat_members_repository = ChatMemberRepository(db)
 
@@ -43,8 +40,7 @@ class FriendshipRequestResource(Resource):
     @auth_middleware
     def get(self):
         response = make_response(render_template('friendship_request.html',))
-        # return friendship_request_service.get(request)
-        return response
+        return auth_functions.set_auth_cookies(request.cookies.get('authorization'), response)
 
     def post(self):
         return friendship_request_service.create(request)
