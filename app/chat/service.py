@@ -12,7 +12,7 @@ class ChatService:
         pass
 
     def get_chats(self):
-        authorization_header = request.cookies.get('Auth')
+        authorization_header = request.cookies.get('authorization')
         user_id = self.auth_functions.decode_jwt(authorization_header)['user_id']
         user = self.user_repository.get_one(user_id)
 

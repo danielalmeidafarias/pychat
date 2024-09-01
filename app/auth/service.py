@@ -1,13 +1,14 @@
+import uuid
+
 from sqlalchemy.exc import NoResultFound
 from app.auth.schemas import SignInSchema
-from flask import Request, make_response, redirect, render_template
+from flask import Request, make_response, redirect, render_template, request
 from marshmallow import ValidationError
 import datetime
 from redis import Redis
 from .util import AuthFunctions
 from ..user.service import UserRepositoryInterface
 from .util import AuthFunctions
-
 
 class AuthService:
     def __init__(self, user_repository: UserRepositoryInterface, r: Redis):
@@ -17,7 +18,6 @@ class AuthService:
 
     def sign_in(self, request: Request):
         try:
-
             data = request.get_json()
 
             schema = SignInSchema()
@@ -44,10 +44,10 @@ class AuthService:
 
                 access_token = auth_functions.get_access_token(user['id'])
 
-                response = make_response(redirect('/chat'))
-                response.set_cookie('Auth', access_token)
+                response = make_response()
+                response.set_cookie('authorization', access_token, httponly=True)
 
-                return redirect('/chat', code=302)
+                return response
             else:
                 login_trying_count = self.r.get(f"login_count:{user['id']}")
 
@@ -78,21 +78,26 @@ class AuthService:
         except Exception as err:
             print(err)
 
-    def sign_out(self, request: Request):
-        pass
+    def sign_out(self):
+        response = make_response()
+        response.set_cookie('authorization', '', expires=0, httponly=True)
+        return response
 
-    def authenticate(self, request: Request):
-        authorization_header = request.headers.get('Auth')
+    def redirect_signin(self):
+        auth_token = request.cookies.get('authorization')
 
-        try:
-            decoded_jwt = self.auth_functions.decode_jwt(jwt_token=authorization_header)
-            expires_at = datetime.datetime.strptime(decoded_jwt['expires_at'], '%Y-%m-%d %H:%M:%S.%f')
-
-            if expires_at < datetime.datetime.now():
-                raise Exception('Expired access_token')
-
-            return redirect('/chat', code=302)
-
-        except Exception as err:
-            print('err')
+        if auth_token is None:
             return make_response(render_template('auth.html'))
+        else:
+            try:
+                decoded_jwt = self.auth_functions.decode_jwt(jwt_token=auth_token)
+                print(decoded_jwt)
+                expires_at = datetime.datetime.strptime(decoded_jwt['expires_at'], '%Y-%m-%d %H:%M:%S.%f')
+
+                if expires_at < datetime.datetime.now():
+                    raise Exception('Expired access_token')
+
+                return redirect('/chat')
+            except Exception as err:
+                print(err)
+                return make_response(render_template('auth.html'))

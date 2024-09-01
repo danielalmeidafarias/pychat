@@ -1,12 +1,11 @@
 from flask import request, make_response, render_template
 from flask_restx import Resource, Namespace
-from app.db import db
 from marshmallow.exceptions import ValidationError
-from .model import friendship_table
-from .schemas import GetFriendshipSchema, CreateFriendshipSchema, UpdateFriendshipSchema, DeleteFriendshipSchema
+from .schemas import CreateFriendshipSchema, UpdateFriendshipSchema
 from .docs.response_models import FriendshipResponseModels
 from .docs.request_models import FriendshipRequestModels
 from app.common.docs.response_models import CommonResponseModels
+from ..middlewares.auth_middleware import auth_middleware
 
 
 friendship_namespace = Namespace('friendship', 'Friendship Route')
@@ -20,6 +19,7 @@ common_responses = CommonResponseModels(friendship_namespace)
 @friendship_namespace.response(code=409, model=common_responses.unauthorized, description='Unauthorized')
 @friendship_namespace.route('')
 class FriendshipResource(Resource):
+    @auth_middleware
     def get(self):
         response = make_response(render_template('friends.html'))
         return response

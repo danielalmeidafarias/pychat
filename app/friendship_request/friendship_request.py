@@ -13,6 +13,7 @@ from .service import FriendshipRequestService
 from ..friendship.repository import FriendshipRepository
 from ..chat.repository import ChatRepository
 from ..chat_members.repository import ChatMemberRepository
+from ..middlewares.auth_middleware import auth_middleware
 
 friendship_request_namespace = Namespace('friendship_request', 'Friendship_request Route')
 requests = Friendship_requestRequestModels(friendship_request_namespace)
@@ -34,12 +35,12 @@ friendship_request_service = FriendshipRequestService(
 )
 
 
-@auth_middleware
 @friendship_request_namespace.response(code=500, model=common_responses.internal_error, description='Something went wrong')
 @friendship_request_namespace.response(code=400, model=common_responses.data_validation_error, description='Data Validation Error')
 @friendship_request_namespace.response(code=409, model=common_responses.unauthorized, description='Unauthorized')
 @friendship_request_namespace.route('')
 class FriendshipRequestResource(Resource):
+    @auth_middleware
     def get(self):
         response = make_response(render_template('friendship_request.html',))
         # return friendship_request_service.get(request)

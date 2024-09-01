@@ -1,6 +1,7 @@
 from flask_restx import Resource, Namespace
 from dotenv import load_dotenv
 from flask import request, make_response, render_template, redirect, flash, url_for
+from flask_cors import CORS, cross_origin
 from .docs.response_models import AuthResponseModels
 from .docs.request_models import AuthRequestModels
 from ..common.docs.response_models import CommonResponseModels
@@ -10,9 +11,7 @@ from ..middlewares.ddos_protect_middleware import ddos_protect_middleware
 from app.db import db, r
 from .service import AuthService
 from ..user.repository import UserRepository
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, EqualTo, Email
+
 
 load_dotenv()
 auth_namespace = Namespace(name='auth', description='Authorization route')
@@ -34,10 +33,19 @@ class AuthResource(Resource):
     @auth_namespace.expect(requests.signin)
     @auth_namespace.response(model=responses.post_200, description="Success", code=200)
     def post(self):
+        # route to authenticate user's in every request
+        pass
+
+@auth_namespace.route('/signin')
+class SignInResource(Resource):
+    def post(self):
         return auth_service.sign_in(request=request)
 
-
     def get(self):
-        return auth_service.authenticate(request=request)
-        # return redirect('/chat')
-        # return make_response(render_template('auth.html'))
+        return auth_service.redirect_signin()
+
+@auth_namespace.route('/logout')
+class SignOutResource(Resource):
+    def post(self):
+        print(request.cookies.get('authorization'))
+        return auth_service.sign_out()

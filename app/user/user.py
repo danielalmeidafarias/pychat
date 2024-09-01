@@ -26,7 +26,7 @@ user_service = UserService(user_repository, auth_functions)
 @user_namespace.response(code=404, model=common_responses.no_user_found, description='No user found')
 class UserResource(Resource):
 
-    # @auth_middleware
+    @auth_middleware
     @ddos_protect_middleware
     @blocked_ip_middleware
     @user_namespace.header('Authorization', 'Authorization access token')
@@ -49,9 +49,8 @@ class UserResource(Resource):
 account_namespace = Namespace('account', 'Account Route')
 @account_namespace.route('')
 class AccountResource(Resource):
+    @auth_middleware
     def get(selt):
-        # return user_service.get_user(request=request)
-
         response = make_response(render_template('profile.html'))
 
         return response

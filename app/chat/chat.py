@@ -23,7 +23,7 @@ chat_service = ChatService(db)
 @chat_namespace.response(code=409, model=common_responses.unauthorized, description='Unauthorized')
 @chat_namespace.route('')
 class ChatResource(Resource):
-    # @auth_middleware
+    @auth_middleware
     def get(self):
         return chat_service.get_chats()
 

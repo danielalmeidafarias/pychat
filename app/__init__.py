@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from flask_restx import Api
+from flask_cors import CORS
 from .db import db
 from .user.user import user_namespace, account_namespace
 from .auth.auth import auth_namespace
@@ -16,7 +17,12 @@ from flask_bootstrap import Bootstrap4
 
 def create_app():
     app = Flask(__name__)
+
+    # CORS(app, resources={"*": {"origins": "*"}})
+    CORS(app)
+
     app.config['SECRET_KEY'] = 'SUPER SECRET KEY'
+    app.config['CORS_HEADERS'] = 'Content-Type'
 
     socketio = ChatWebsocket(app, cors_allowed_origins="*", db=db)
 
@@ -39,6 +45,6 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    socketio.run(app, use_reloader=True, log_output=True, debug=True)
+    socketio.run(app, debug=True)
 
     return app, socketio
