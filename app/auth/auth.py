@@ -22,7 +22,7 @@ user_repository = UserRepository(db)
 auth_service = AuthService(user_repository, r=r)
 
 
-@auth_namespace.route('')
+@auth_namespace.route('/redirect')
 @auth_namespace.response(code=500, model=common_responses.internal_error, description='Something went wrong')
 @auth_namespace.response(code=400, model=common_responses.data_validation_error, description='Data Validation Error')
 @auth_namespace.response(code=401, model=common_responses.unauthorized, description='Unauthorized')
@@ -36,6 +36,10 @@ class AuthResource(Resource):
         # route to authenticate user's in every request
         pass
 
+    def get(self):
+        # route to authenticate user's in every request
+        pass
+
 @auth_namespace.route('/signin')
 class SignInResource(Resource):
     def post(self):
@@ -43,6 +47,7 @@ class SignInResource(Resource):
 
     def get(self):
         return auth_service.redirect_signin()
+
 
 @auth_namespace.route('/logout')
 class SignOutResource(Resource):

@@ -19,14 +19,13 @@ user_repository = UserRepository(db)
 auth_functions = AuthFunctions()
 user_service = UserService(user_repository, auth_functions)
 
-@user_namespace.route('')
+@user_namespace.route('/create')
 @user_namespace.response(code=500, model=common_responses.internal_error, description='Something went wrong')
 @user_namespace.response(code=400, model=common_responses.data_validation_error, description='Data Validation Error')
 @user_namespace.response(code=401, model=common_responses.unauthorized, description='Unauthorized')
 @user_namespace.response(code=404, model=common_responses.no_user_found, description='No user found')
 class UserResource(Resource):
 
-    @auth_middleware
     @ddos_protect_middleware
     @blocked_ip_middleware
     @user_namespace.header('Authorization', 'Authorization access token')
@@ -45,10 +44,8 @@ class UserResource(Resource):
         return user_service.create_user(request=request)
 
 
-
-account_namespace = Namespace('account', 'Account Route')
-@account_namespace.route('')
-class AccountResource(Resource):
+@user_namespace.route('/profile')
+class ProfileResource(Resource):
     @auth_middleware
     def get(selt):
         response = make_response(render_template('profile.html'))

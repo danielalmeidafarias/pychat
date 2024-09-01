@@ -4,10 +4,13 @@ const signIn = async () => {
     const name = document.getElementById("name").value;
 
     try {
-        const response = await axios.post('http://localhost:5000/user', {
+        const response = await axios.post('http://localhost:5000/user/create', {
             email,
             password,
             name
+        }).then((data) => {
+            // console.log(data)
+            window.location = 'http://localhost:5000/auth/signin'
         })
     } catch (err) {
         Swal.fire({
@@ -22,4 +25,7 @@ const signIn = async () => {
 
 const signup_btn = document.getElementById("signup_btn")
 
-signup_btn.addEventListener('click', async() => await signIn())
+signup_btn.addEventListener('click', async(event) => {
+    event.preventDefault()
+    await signIn()
+})
