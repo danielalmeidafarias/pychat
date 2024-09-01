@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 from flask_restx import Api
 from flask_cors import CORS
 from .db import db
@@ -26,7 +26,10 @@ def create_app():
 
     @app.errorhandler(404)
     def page_not_found(e):
-        return render_template('not_found.html'), 404
+        if request.method == "GET":
+            return redirect('/auth/signin')
+        else:
+            return render_template('not_found.html'), 404
 
     api = Api(app)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///pychat.db"

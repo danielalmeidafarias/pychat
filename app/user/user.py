@@ -10,6 +10,7 @@ from app.middlewares.ddos_protect_middleware import ddos_protect_middleware
 from .repository import UserRepository
 from .service import UserService
 from ..middlewares.auth_middleware import auth_middleware
+from ..middlewares.redirect_auth_middleware import redirect_auth_middleware
 
 user_namespace = Namespace('user', 'User Route')
 requests = UserRequestModels(user_namespace)
@@ -24,10 +25,11 @@ user_service = UserService(user_repository, auth_functions)
 @user_namespace.response(code=400, model=common_responses.data_validation_error, description='Data Validation Error')
 @user_namespace.response(code=401, model=common_responses.unauthorized, description='Unauthorized')
 @user_namespace.response(code=404, model=common_responses.no_user_found, description='No user found')
-class UserResource(Resource):
+class CreateUserResource(Resource):
 
     @ddos_protect_middleware
     @blocked_ip_middleware
+    @redirect_auth_middleware
     @user_namespace.header('Authorization', 'Authorization access token')
     @user_namespace.param('user_id')
     @user_namespace.response(code=200, model=responses.get_all_200, description='All users')

@@ -86,18 +86,18 @@ class AuthService:
     def redirect_signin(self):
         auth_token = request.cookies.get('authorization')
 
-        if auth_token is None:
-            return make_response(render_template('auth.html'))
-        else:
-            try:
-                decoded_jwt = self.auth_functions.decode_jwt(jwt_token=auth_token)
-                print(decoded_jwt)
-                expires_at = datetime.datetime.strptime(decoded_jwt['expires_at'], '%Y-%m-%d %H:%M:%S.%f')
-
-                if expires_at < datetime.datetime.now():
-                    raise Exception('Expired access_token')
-
-                return redirect('/chat')
-            except Exception as err:
-                print(err)
-                return make_response(render_template('auth.html'))
+        # if auth_token is None:
+        return make_response(render_template('auth.html'))
+        # else:
+        #     try:
+        #         decoded_jwt = self.auth_functions.decode_jwt(jwt_token=auth_token)
+        #         print(decoded_jwt)
+        #         expires_at = datetime.datetime.strptime(decoded_jwt['expires_at'], '%Y-%m-%d %H:%M:%S.%f')
+        #
+        #         if expires_at < datetime.datetime.now():
+        #             raise Exception('Expired access_token')
+        #
+        #         return redirect('/chat')
+        #     except Exception as err:
+        #         print(err)
+        #         return make_response(render_template('auth.html'))

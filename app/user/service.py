@@ -90,13 +90,23 @@ class UserService:
                 name=validated_data['name']
             )
 
+
         except IntegrityError as err:
             print(err)
             return {"message": "There is already a user with this credentials!"}, 409
 
-        return {
+        access_token = self.auth_functions.get_access_token(new_user.id)
+
+        response = make_response({
             "message": "User created with success",
             "id": new_user.id.__str__(),
             "email": new_user.email,
             "name": new_user.name
-        }, 201
+        })
+
+        response.set_cookie('authorization', access_token, httponly=True)
+
+        return response
+
+
+

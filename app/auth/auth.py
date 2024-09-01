@@ -6,6 +6,7 @@ from .docs.response_models import AuthResponseModels
 from .docs.request_models import AuthRequestModels
 from ..common.docs.response_models import CommonResponseModels
 from ..middlewares.auth_middleware import auth_middleware
+from ..middlewares.redirect_auth_middleware import redirect_auth_middleware
 from ..middlewares.blocked_ip_middleware import blocked_ip_middleware
 from ..middlewares.ddos_protect_middleware import ddos_protect_middleware
 from app.db import db, r
@@ -45,8 +46,10 @@ class SignInResource(Resource):
     def post(self):
         return auth_service.sign_in(request=request)
 
+
+    @redirect_auth_middleware
     def get(self):
-        return auth_service.redirect_signin()
+        return make_response(render_template('auth.html'))
 
 
 @auth_namespace.route('/logout')

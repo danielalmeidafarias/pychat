@@ -25,6 +25,14 @@ class AuthFunctions:
 
         return access_token
 
+    def verify_access_token(self, authorization_cookie):
+        decoded_jwt = self.decode_jwt(jwt_token=authorization_cookie)
+        expires_at = datetime.datetime.strptime(decoded_jwt['expires_at'], '%Y-%m-%d %H:%M:%S.%f')
+
+        if expires_at < datetime.datetime.now():
+            raise Exception('Expired access_token')
+
+
     @staticmethod
     def is_password_correct(password, hashed_password):
         is_password_correct = bcrypt.checkpw(

@@ -10,7 +10,7 @@ const signIn = async () => {
             name
         }).then((data) => {
             // console.log(data)
-            window.location = 'http://localhost:5000/auth/signin'
+            window.location.reload()
         })
     } catch (err) {
         Swal.fire({
