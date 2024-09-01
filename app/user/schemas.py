@@ -1,5 +1,5 @@
 from marshmallow import Schema, fields, ValidationError
-from password_strength import PasswordPolicy, tests
+from password_strength import PasswordPolicy
 
 password_policy = PasswordPolicy.from_names(
     length=8,

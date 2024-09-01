@@ -6,6 +6,7 @@ from .docs.response_models import FriendshipResponseModels
 from .docs.request_models import FriendshipRequestModels
 from app.common.docs.response_models import CommonResponseModels
 from ..middlewares.auth_middleware import auth_middleware
+from ..auth.util import auth_functions
 
 
 friendship_namespace = Namespace('friendship', 'Friendship Route')

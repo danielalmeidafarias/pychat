@@ -1,13 +1,12 @@
-from flask import request, make_response, render_template
+from flask import request
 from flask_restx import Resource, Namespace
 from marshmallow.exceptions import ValidationError
-from .schemas import CreateChatSchema, UpdateChatSchema, DeleteChatSchema
+from .schemas import CreateChatSchema, UpdateChatSchema
 from .docs.response_models import ChatResponseModels
 from .docs.request_models import ChatRequestModels
 from app.common.docs.response_models import CommonResponseModels
 from .service import ChatService
 from app.db import db
-from ..middlewares import auth_middleware
 from ..middlewares.auth_middleware import auth_middleware
 
 

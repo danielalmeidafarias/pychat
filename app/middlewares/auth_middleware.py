@@ -1,6 +1,5 @@
-from flask import request, make_response, redirect
+from flask import request, redirect
 from functools import wraps
-import datetime
 from dotenv import load_dotenv
 from ..auth.util import AuthFunctions
 
@@ -23,7 +22,6 @@ class AuthMiddleware:
         @wraps(func)
         def wrapper(*args, **kwargs):
             authorization_cookie = request.cookies.get('authorization')
-
             try:
                 self.auth_functions.verify_access_token(authorization_cookie)
 

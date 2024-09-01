@@ -1,9 +1,8 @@
-from flask import request, make_response
+from flask import request
 from functools import wraps
 import datetime
 from dotenv import load_dotenv
 from ..auth.util import AuthFunctions
-from flask_socketio import disconnect
 
 load_dotenv()
 

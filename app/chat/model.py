@@ -1,6 +1,5 @@
 from app.db import db
 from datetime import datetime
-from ..chat_members.model import chat_members
 
 
 class Chat(db.Model):

@@ -1,9 +1,7 @@
 from flask import request
 from flask_restx import Resource, Namespace
-from app.db import db
 from marshmallow.exceptions import ValidationError
-from .model import Chat_membersModel
-from .schemas import GetChat_membersSchema, CreateChat_membersSchema, UpdateChat_membersSchema, DeleteChat_membersSchema
+from .schemas import CreateChat_membersSchema, UpdateChat_membersSchema
 from .docs.response_models import Chat_membersResponseModels
 from .docs.request_models import Chat_membersRequestModels
 from app.common.docs.response_models import CommonResponseModels

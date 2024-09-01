@@ -1,9 +1,7 @@
 from flask import request
 from flask_restx import Resource, Namespace
-from app.db import db
 from marshmallow.exceptions import ValidationError
-from .model import MessageModel
-from .schemas import GetMessageSchema, CreateMessageSchema, UpdateMessageSchema, DeleteMessageSchema
+from .schemas import CreateMessageSchema, UpdateMessageSchema
 from .docs.response_models import MessageResponseModels
 from .docs.request_models import MessageRequestModels
 from app.common.docs.response_models import CommonResponseModels

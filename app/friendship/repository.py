@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-from uuid import uuid4 as uuid
 from .model import friendship_table
 from sqlalchemy import and_
 

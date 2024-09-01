@@ -1,5 +1,3 @@
-from sqlalchemy.orm import backref
-
 from app.db import db
 from ..friendship.model import friendship_table
 from ..chat_members.model import chat_members

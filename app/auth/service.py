@@ -1,12 +1,9 @@
-import uuid
-
 from sqlalchemy.exc import NoResultFound
 from app.auth.schemas import SignInSchema
-from flask import Request, make_response, redirect, render_template, request
+from flask import Request, make_response, render_template, request
 from marshmallow import ValidationError
 import datetime
 from redis import Redis
-from .util import AuthFunctions
 from ..user.service import UserRepositoryInterface
 from .util import AuthFunctions
 

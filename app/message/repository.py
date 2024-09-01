@@ -1,6 +1,3 @@
-from email.errors import MessageError
-
-from flask import jsonify
 from flask_sqlalchemy import SQLAlchemy
 from .model import Message
 from uuid import uuid4 as uuid

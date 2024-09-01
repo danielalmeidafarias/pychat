@@ -1,5 +1,4 @@
-from marshmallow import Schema, fields
-
+from marshmallow import Schema
 
 class CreateFriendshipSchema(Schema):
     pass

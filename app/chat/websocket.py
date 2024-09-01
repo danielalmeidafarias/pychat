@@ -29,12 +29,11 @@ class ChatWebsocket(SocketIO):
         def on_connect():
             socketio_id = request.sid
 
-            authorization_header = request.headers.get('Auth')
-            user_id = self.auth_functions.decode_jwt(authorization_header)['user_id']
+            authorization_cookies = request.cookies.get('authorization')
+            user_id = self.auth_functions.decode_jwt(authorization_cookies)['user_id']
 
             self.connected[user_id] = socketio_id
 
-            print(f"{request.sid} connected successfully")
             self.emit("connected successfully")
 
         @self.on('disconnect')
@@ -53,13 +52,11 @@ class ChatWebsocket(SocketIO):
                     index = connected_values.index(value)
                     self.connected.pop(connected_key[index])
 
-            print(f"{request.sid} disconnected successfully")
-
         @self.on('message')
         def on_message(data):
-            authorization_header = request.headers.get('Auth')
+            authorization_cookies = request.cookies.get('Auth')
 
-            user_id = self.auth_functions.decode_jwt(authorization_header)['user_id']
+            user_id = self.auth_functions.decode_jwt(authorization_cookies)['user_id']
             user = self.user_repository.get_one(user_id)
 
             chat_id = data['chat_id']

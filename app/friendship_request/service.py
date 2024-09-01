@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from flask import Request, jsonify
+from flask import Request
 from .schemas import CreateFriendshipRequestSchema, UpdateFriendshipRequestSchema
 from sqlalchemy.exc import NoResultFound, IntegrityError
 from marshmallow.exceptions import ValidationError

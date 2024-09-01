@@ -1,4 +1,4 @@
-from flask_restx import fields, Namespace
+from flask_restx import Namespace
 
 
 class MessageRequestModels:

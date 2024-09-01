@@ -1,6 +1,5 @@
-from flask import request, make_response, redirect
+from flask import request, redirect
 from functools import wraps
-import datetime
 from ..auth.util import AuthFunctions
 
 class AuthMiddleware:

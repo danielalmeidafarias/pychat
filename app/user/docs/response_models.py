@@ -1,5 +1,4 @@
 from flask_restx import fields, Namespace
-from app.common.docs.response_models import CommonResponseModels
 
 class UserResponseModels:
     def __init__(self, nm: Namespace):

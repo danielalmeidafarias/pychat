@@ -1,11 +1,9 @@
 from flask_restx import Resource, Namespace
 from dotenv import load_dotenv
-from flask import request, make_response, render_template, redirect, flash, url_for
-from flask_cors import CORS, cross_origin
+from flask import request, make_response, render_template
 from .docs.response_models import AuthResponseModels
 from .docs.request_models import AuthRequestModels
 from ..common.docs.response_models import CommonResponseModels
-from ..middlewares.auth_middleware import auth_middleware
 from ..middlewares.redirect_auth_middleware import redirect_auth_middleware
 from ..middlewares.blocked_ip_middleware import blocked_ip_middleware
 from ..middlewares.ddos_protect_middleware import ddos_protect_middleware

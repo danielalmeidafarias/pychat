@@ -1,6 +1,5 @@
 from flask import Request, make_response
 from sqlalchemy.exc import NoResultFound
-from app.db import db
 from .schemas import CreateUserSchema
 from marshmallow import ValidationError
 import uuid
