@@ -84,5 +84,3 @@ class ChatWebsocket(SocketIO):
                 chat_id=validated_data['chat_id'],
                 user_id=user_id,
                 content=validated_data['content'])
-
-            print(f"message received: {data['content']}")

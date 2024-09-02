@@ -1,6 +1,6 @@
 from sqlalchemy.exc import NoResultFound
 from app.auth.schemas import SignInSchema
-from flask import Request, make_response, render_template, request
+from flask import Request, make_response, render_template
 from marshmallow import ValidationError
 import datetime
 from redis import Redis
@@ -40,9 +40,9 @@ class AuthService:
                 self.r.delete(f"login_count:{user['id']}")
 
                 access_token = auth_functions.get_access_token(user['id'])
-
-                response = make_response()
-                response.set_cookie('authorization', access_token, httponly=True)
+                response = make_response("Login successful")
+                response.set_cookie('authorization', access_token, samesite='Lax', httponly=True)
+                # response.set_cookie('authorization', access_token, httponly=True, secure=True, samesite='Lax')
 
                 return response
             else:
@@ -80,7 +80,7 @@ class AuthService:
         response.set_cookie('authorization', '', expires=0, httponly=True)
         return response
 
-    def redirect_signin(self):
+    def redirect_signin(self, request: Request):
         auth_token = request.cookies.get('authorization')
 
         # if auth_token is None:

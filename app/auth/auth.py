@@ -53,5 +53,4 @@ class SignInResource(Resource):
 @auth_namespace.route('/logout')
 class SignOutResource(Resource):
     def post(self):
-        print(request.cookies.get('authorization'))
         return auth_service.sign_out()

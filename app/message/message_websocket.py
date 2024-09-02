@@ -5,8 +5,7 @@ import websockets
 
 async def handler(websocket):
     while True:
-        message = await websocket.recv()
-        print(message)
+        await websocket.recv()
         await websocket.send(json.dumps({
             "test": 'testing'
         }))

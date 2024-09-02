@@ -44,7 +44,7 @@ class AuthFunctions:
         return is_password_correct
 
     def set_auth_cookies(self, user_id: str, response: Response):
-        response.set_cookie('authorization', self.get_access_token(user_id), httponly=True, secure=True,
+        response.set_cookie('authorization', self.get_access_token(user_id),
                             expires=(datetime.datetime.now() + datetime.timedelta(hours=1)))
 
         return response

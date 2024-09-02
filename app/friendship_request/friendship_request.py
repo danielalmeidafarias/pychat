@@ -40,7 +40,9 @@ class FriendshipRequestResource(Resource):
     @auth_middleware
     def get(self):
         response = make_response(render_template('friendship_request.html',))
-        return auth_functions.set_auth_cookies(request.cookies.get('authorization'), response)
+        # return auth_functions.set_auth_cookies(request.cookies.get('authorization'), response)
+        return response
+
 
     def post(self):
         return friendship_request_service.create(request)
