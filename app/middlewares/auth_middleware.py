@@ -25,8 +25,9 @@ class AuthMiddleware:
             try:
                 self.auth_functions.verify_access_token(authorization_cookie)
 
-                return func(self)
+                response = func(self)
 
+                return self.auth_functions.set_auth_cookies(response, authorization_cookie)
             except Exception as err:
                 print(err)
                 return redirect('/auth/signin')

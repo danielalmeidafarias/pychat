@@ -2,7 +2,7 @@ import jwt
 import os
 import datetime
 import bcrypt
-from flask import Response, make_response
+from flask import Response
 
 
 class AuthFunctions:
@@ -43,10 +43,12 @@ class AuthFunctions:
 
         return is_password_correct
 
-    def set_auth_cookies(self, user_id: str, response: Response):
-        response.set_cookie('authorization', self.get_access_token(user_id),
-                            expires=(datetime.datetime.now() + datetime.timedelta(hours=1)))
+    def set_auth_cookies(self, response: Response, authorization_cookie: str):
+        user_id = self.decode_jwt(authorization_cookie)['user_id']
+        access_token = self.get_access_token(user_id=user_id)
 
+        response.set_cookie('authorization', access_token, samesite='Lax', httponly=True,
+                            expires=(datetime.datetime.now().utcnow() + datetime.timedelta(seconds=1)))
         return response
 
 

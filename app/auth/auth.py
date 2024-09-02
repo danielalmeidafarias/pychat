@@ -47,7 +47,8 @@ class SignInResource(Resource):
 
     @redirect_auth_middleware
     def get(self):
-        return make_response(render_template('auth.html'))
+        response = make_response(render_template('auth.html'))
+        return response
 
 
 @auth_namespace.route('/logout')
