@@ -141,6 +141,10 @@ footer {
 
 .logo {
     color: #006400;
-    font-weight: bold;
+    font-weight: 700;
     font-size: 48px
+}
+
+.navbar-logo {
+    font-weight: 700;
 }
