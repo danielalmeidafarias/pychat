@@ -1,19 +1,19 @@
 import { io } from "https://cdn.socket.io/4.7.5/socket.io.esm.min.js";
-import jsCookie from 'https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/+esm';
 
 document.addEventListener("DOMContentLoaded", () => {
     let chatMessages = document.getElementById('chat-messages');
     chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 
-const authCookies = jsCookie.get('Auth');
-
 const socket = io("http://localhost:5000", {
-    forceNew: true,
-    extraHeaders: {
-        "Auth": authCookies
-    }
+    forceNew: true
 });
+
+let params = new URLSearchParams(document.location.search)
+
+if (params.get('success_login') == 'true') {
+    SuccessfulLogin()
+}
 
 const chatMessages = document.getElementById('chat-messages');
 

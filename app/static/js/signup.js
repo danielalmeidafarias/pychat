@@ -4,22 +4,21 @@ const signIn = async () => {
     const name = document.getElementById("name").value;
 
     try {
-        const response = await axios.post('http://localhost:5000/user/create', {
+        await axios.post('http://localhost:5000/user/create', {
             email,
             password,
             name
-        }).then((data) => {
-            // console.log(data)
+        }).then(async (err) => {
             window.location.reload()
         })
     } catch (err) {
-        Swal.fire({
-            title: 'Error!',
-            text: 'Do you want to continue',
-            icon: 'error',
-            confirmButtonText: 'Cool'
-        })
-        console.log(err)
+        if(err.status == 409) {
+            BaseResponse(err, "warning")
+        } else if(err.status == 400) {
+            DataValidationError(err)
+        } else {
+            BaseResponse(err, "warning")
+        }
     }
 }
 

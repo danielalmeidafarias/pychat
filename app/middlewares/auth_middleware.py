@@ -2,6 +2,7 @@ from flask import request, redirect
 from functools import wraps
 from dotenv import load_dotenv
 from ..auth.util import AuthFunctions
+from jwt import ExpiredSignatureError
 
 load_dotenv()
 
@@ -29,9 +30,10 @@ class AuthMiddleware:
 
                 return self.auth_functions.set_auth_cookies(response, authorization_cookie)
             except Exception as err:
-                print(err)
-                return redirect('/auth/signin')
-
+                if err == "Expired access_token":
+                    return redirect('/auth/signin?expired_session=true')
+                else:
+                    return redirect('/auth/signin?unauthorized=true')
         return wrapper
 
 auth_middleware = AuthMiddleware().middleware

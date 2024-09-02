@@ -16,10 +16,10 @@ class StrongPassword(fields.Field):
 
         if len(strong_password_errors) > 0:
             raise ValidationError(
-                "Password must have at least 8 characters, "
-                "including 3 numbers, "
-                "1 special character "
-                "and 1 uppercase letter"
+                "Password must have at least eight characters, "
+                "including three numbers, "
+                "one special character "
+                "and one uppercase letter"
                 )
 
 

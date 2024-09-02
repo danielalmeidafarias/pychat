@@ -74,6 +74,9 @@ class AuthService:
                 }, 401
         except Exception as err:
             print(err)
+            return {
+                "message": "Something went wrong, please try again"
+            }, 500
 
     def sign_out(self):
         response = make_response()

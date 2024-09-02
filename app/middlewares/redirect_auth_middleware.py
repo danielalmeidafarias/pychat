@@ -14,7 +14,7 @@ class AuthMiddleware:
             try:
                 self.auth_functions.verify_access_token(authorization_cookie)
 
-                return redirect('/chat')
+                return redirect('/chat?success_login=true')
 
             except Exception as err:
                 print(err)

@@ -16,7 +16,7 @@ class AuthFunctions:
     def get_access_token(user_id):
         payload = {
             "user_id": str(user_id),
-            "expires_at": str(datetime.datetime.now() + datetime.timedelta(hours=1))
+            "expires_at": str(datetime.datetime.now() + datetime.timedelta(minutes=30))
         }
 
         access_token = jwt.encode(
@@ -48,7 +48,7 @@ class AuthFunctions:
         access_token = self.get_access_token(user_id=user_id)
 
         response.set_cookie('authorization', access_token, samesite='Lax', httponly=True,
-                            expires=(datetime.datetime.now().utcnow() + datetime.timedelta(seconds=1)))
+                            expires=(datetime.datetime.now().utcnow() + datetime.timedelta(hours=1)))
         return response
 
 

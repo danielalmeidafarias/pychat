@@ -1,21 +1,28 @@
+let params = new URLSearchParams(document.location.search)
+
+if (params.get('expired_session') == 'true') {
+        ExpiredAccessToken()
+} else if(params.get('unauthorized') == 'true') {
+        Unauthorized()
+}
+
 const signIn = async () => {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    console.log(document.cookie)
-
     await axios.post('http://localhost:5000/auth/signin', {
         email,
         password
-    }).then((data) => {
+    }).then(async (data) => {
         window.location.reload()
-    }).catch((err) => {
-        Swal.fire({
-            title: 'Error!',
-            text: 'Do you want to continue',
-            icon: 'error',
-            confirmButtonText: 'Cool'
-        });
+    }).catch(async (err) => {
+        if(err.status == 401) {
+            BaseResponse(err, 'error')
+        } else if(err.status == 404){
+            BaseResponse(err, 'question')
+        } else {
+            BaseResponse(err, 'warning')
+        }
     });
 };
 
