@@ -12,7 +12,7 @@ const socket = io("http://localhost:5000", {
 let params = new URLSearchParams(document.location.search)
 
 if (params.get('success_login') == 'true') {
-    SuccessfulLogin()
+    SuccessfullLogin()
 }
 
 const chatMessages = document.getElementById('chat-messages');

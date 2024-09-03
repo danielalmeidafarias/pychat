@@ -13,7 +13,7 @@
 <!-- Header / Navbar -->
 <nav class="navbar navbar-expand-lg navbar-custom">
   <div class="container">
-    <a class="navbar-brand text-pale-green" href="/">PyChat</a>
+    <a class="navbar-brand text-pale-green navbar-logo" href="/">PyChat</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -75,8 +75,9 @@
 <script>
   const logout_btn = document.getElementById('logout-btn')
   logout_btn.addEventListener('click', async () => {
-    await axios.post('http://localhost:5000/auth/logout').then(() => {
-      window.location.reload()
+    await axios.post('http://localhost:5000/auth/logout').then(async () => {
+      await SuccessfullLogout()
+      window.location = 'http://localhost:5000/auth/signin'
     })
   })
 </script>

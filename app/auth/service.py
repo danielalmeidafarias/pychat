@@ -80,24 +80,5 @@ class AuthService:
 
     def sign_out(self):
         response = make_response()
-        response.set_cookie('authorization', '', expires=0, httponly=True)
+        response.set_cookie('authorization', '', expires=(datetime.datetime.now().utcnow() + datetime.timedelta(seconds=2)), httponly=True)
         return response
-
-    def redirect_signin(self, request: Request):
-        auth_token = request.cookies.get('authorization')
-
-        # if auth_token is None:
-        return make_response(render_template('auth.html'))
-        # else:
-        #     try:
-        #         decoded_jwt = self.auth_functions.decode_jwt(jwt_token=auth_token)
-        #         print(decoded_jwt)
-        #         expires_at = datetime.datetime.strptime(decoded_jwt['expires_at'], '%Y-%m-%d %H:%M:%S.%f')
-        #
-        #         if expires_at < datetime.datetime.now():
-        #             raise Exception('Expired access_token')
-        #
-        #         return redirect('/chat')
-        #     except Exception as err:
-        #         print(err)
-        #         return make_response(render_template('auth.html'))

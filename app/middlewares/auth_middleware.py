@@ -23,6 +23,7 @@ class AuthMiddleware:
         @wraps(func)
         def wrapper(*args, **kwargs):
             authorization_cookie = request.cookies.get('authorization')
+            print(1, authorization_cookie)
             try:
                 self.auth_functions.verify_access_token(authorization_cookie)
 

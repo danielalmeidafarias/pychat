@@ -11,6 +11,19 @@ const Toast = Swal.mixin({
       showCloseButton: true
 })
 
+const FasterToast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      iconColor: 'white',
+      customClass: {
+        popup: 'colored-toast',
+      },
+      showConfirmButton: false,
+      timerProgressBar: true,
+      timer: 1000,
+      showCloseButton: true
+})
+
 const DataValidationError = async (response) => {
     let errors = ''
     let error_counter = 0
@@ -38,10 +51,17 @@ const Unauthorized = async () => {
     })
 }
 
-const SuccessfulLogin = async () => {
+const SuccessfullLogin = async () => {
     await Toast.fire({
         icon: 'success',
         title: 'Successful login!',
+    })
+}
+
+const SuccessfullLogout = async () => {
+    await FasterToast.fire({
+        icon: 'success',
+        title: 'Successful Logout. Bye!',
     })
 }
 
