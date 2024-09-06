@@ -1,4 +1,4 @@
-from flask import Request, make_response
+from flask import Request, make_response, render_template
 from sqlalchemy.exc import NoResultFound
 from .schemas import CreateUserSchema
 from marshmallow import ValidationError
@@ -8,6 +8,10 @@ from sqlalchemy.exc import IntegrityError
 from abc import ABC, abstractmethod
 from typing import Optional
 from ..auth.util import AuthFunctions
+from werkzeug.utils import secure_filename
+from PIL import Image
+import os
+from media.util import save_profile_pic
 
 
 class UserRepositoryInterface(ABC):
@@ -51,7 +55,7 @@ class UserService:
                     },
                 })
                 response.status_code = 200
-                return self.auth_functions.set_auth_cookies(request.headers.get('Authorization'), response)
+                return self.auth_functions.set_auth_cookies(request.cookies.get('authorization'), response)
 
             except NoResultFound:
                 return {"message": "No user with this credentials was found"}, 400
@@ -66,13 +70,15 @@ class UserService:
                     "users": users,
                 })
                 response.status_code = 200
-                return self.auth_functions.set_auth_cookies(request.headers.get('Authorization'), response)
+                return self.auth_functions.set_auth_cookies(request.cookies.get('authorization'), response)
             except Exception as err:
                 print(err)
                 return {"message": "Something went wrong, try again later"}, 500
 
     def create_user(self, request: Request):
-        data = request.get_json()
+        data = request.form.to_dict()
+        profile_pic = request.files['picture']
+
         schema = CreateUserSchema()
         validated_data = schema.dump(data)
 
@@ -83,12 +89,13 @@ class UserService:
 
         try:
             new_user = self.user_repository.create(
-                user_id=str(uuid.uuid4()),
+                user_id= str(uuid.uuid4()),
                 email=validated_data['email'],
                 password=bcrypt.hashpw(str.encode(validated_data["password"]), bcrypt.gensalt()),
                 name=validated_data['name']
             )
 
+            save_profile_pic(profile_pic, new_user.id)
 
         except IntegrityError as err:
             print(err)
@@ -107,5 +114,13 @@ class UserService:
 
         return response
 
+    def user_profile(self, request: Request):
+        authorization = request.cookies.get('authorization')
+        user_id = self.auth_functions.decode_jwt(authorization)['user_id']
 
+        user = self.user_repository.get_one(user_id)
+
+        response = make_response(render_template('profile.html', user=user))
+
+        return response
 

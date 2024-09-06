@@ -8,7 +8,11 @@
             {% for chat in chats %}
             <li class="list-group-item {% if request.args.get('chat_id') == chat.chat_id|string %} list-group-item-active {% else %} bg-light-gray {% endif %}">
                 <a href="{{ url_for('chat_chat_resource', id=chat['id']) }}" class="text-decoration-none {% if request.args.get('chat_id') == chat.chat_id|string %} text-white {% else %} text-dark-green {% endif %}">
-                    {{ chat.id }}
+                    {% if chat.name is none %}
+                    {{ chat.chat_members[0].name if chat.chat_members[0].id != user['id'] else chat.chat_members[1].name}}
+                    {% else %}
+                    {{ chat.name }}
+                    {% endif %}
                 </a>
             </li>
             {% endfor %}

@@ -24,13 +24,16 @@ class UserRepository(UserRepositoryInterface):
 
     def get_one(self, user_id: str):
         user = self.db.session.execute(select(User).where(User.id == user_id)).scalar_one()
+        # print(user)
         return {
                 "id": user_id,
                 "name": user.name,
                 "email": user.email,
                 "password": user.password,
                 "friends": user.friends,
-                "chats": user.chats
+                "chats": user.chats,
+                "received_requests": user.received_requests,
+                "sent_requests": user.sent_requests,
         }
 
     def get_one_by_email(self, email):
@@ -63,3 +66,20 @@ class UserRepository(UserRepositoryInterface):
 
     def delete(self):
         pass
+
+    def search(self, user_id: str, name: str):
+        users = self.db.session.execute(select(User).where(User.name.like(f"%{name}%"))).all()
+
+        return [
+            {
+                "id": user[0].id,
+                "name": user[0].name,
+                "email": user[0].email,
+                "password": user[0].password,
+                "friends": user[0].friends,
+                "chats": user[0].chats,
+                "received_requests": user[0].received_requests,
+                "sent_requests": user[0].sent_requests,
+            } for user in users if user[0].id != user_id
+        ]
+

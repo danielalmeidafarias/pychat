@@ -39,9 +39,7 @@ friendship_request_service = FriendshipRequestService(
 class FriendshipRequestResource(Resource):
     @auth_middleware
     def get(self):
-        response = make_response(render_template('friendship_request.html',))
-        # return auth_functions.set_auth_cookies(request.cookies.get('authorization'), response)
-        return response
+        return friendship_request_service.get(request=request)
 
 
     def post(self):
@@ -49,8 +47,10 @@ class FriendshipRequestResource(Resource):
 
 @friendship_request_namespace.route('/<friendship_request_id>')
 class UniqueFriendshipRequestResource(Resource):
+    @auth_middleware
     def put(self, friendship_request_id):
         return friendship_request_service.update(request, friendship_request_id)
 
-    def delete(self):
-        pass
+    @auth_middleware
+    def delete(self, friendship_request_id):
+        return friendship_request_service.delete(friendship_request_id)

@@ -48,6 +48,7 @@ class SignInResource(Resource):
     @redirect_auth_middleware
     def get(self):
         response = make_response(render_template('auth.html'))
+        response.set_cookie('authorization', '')
         return response
 
 

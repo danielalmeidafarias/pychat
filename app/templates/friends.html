@@ -7,12 +7,12 @@
   <h1 class="text-center text-dark-green">Search Friends</h1>
   <div class="row justify-content-center">
     <div class="col-md-6">
-      <form>
+      <form >
         <div class="mb-3">
           <label for="name" class="form-label text-dark-green">Find Friends</label>
           <input type="text" class="form-control" id="name" placeholder="Enter your friend name">
         </div>
-        <button type="submit" class="btn bg-light-green text-white w-100">Search</button>
+        <button id="search-btn" type="submit" class="btn bg-light-green text-white w-100">Search</button>
       </form>
     </div>
   </div>
@@ -23,38 +23,24 @@
   <h2 class="text-dark-green">Friends List</h2>
   <div class="list-group">
     <!-- Friend 1 -->
+  {% for result in results %}
     <div class="list-group-item d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center">
-        <img src="https://via.placeholder.com/50" alt="Friend 1" class="rounded-circle me-3">
+        <img src="http://localhost:5000/media/50/{{ result['id'] }}" alt="Friend 1" class="rounded-circle me-3">
         <div>
-          <h5 class="mb-1">John Doe</h5>
-          <p class="mb-0">johndoe@example.com</p>
-        </div>
+          <h5 class="mb-1">{{ result['name'] }}</h5>
+          <p class="mb-0">{{ result['email'] }}</p>
+        </div>'
       </div>
-      <button class="btn btn-light-green">Send Friendship Request</button>
+      {% set sent_request_ids = user['sent_requests'] | map(attribute='receiver_id') | list %}
+      {% if result['id'] in sent_request_ids %}
+        <button  id="{{ user['sent_requests'][sent_request_ids.index(result['id'])]['id'] }}" name="delete_request_btn"
+                 class="btn btn-purple">Cancel Friendship Request</button>
+      {% else %}
+        <button id="{{ result['id'] }}" name="send_request_btn" class="btn btn-light-green">Send Friendship Request</button>
+      {% endif %}
     </div>
-    <!-- Friend 2 -->
-    <div class="list-group-item d-flex justify-content-between align-items-center">
-      <div class="d-flex align-items-center">
-        <img src="https://via.placeholder.com/50" alt="Friend 2" class="rounded-circle me-3">
-        <div>
-          <h5 class="mb-1">Jane Smith</h5>
-          <p class="mb-0">janesmith@example.com</p>
-        </div>
-      </div>
-      <button class="btn btn-light-green">Send Friendship Request</button>
-    </div>
-    <!-- Friend 3 -->
-    <div class="list-group-item d-flex justify-content-between align-items-center">
-      <div class="d-flex align-items-center">
-        <img src="https://via.placeholder.com/50" alt="Friend 3" class="rounded-circle me-3">
-        <div>
-          <h5 class="mb-1">Bob Johnson</h5>
-          <p class="mb-0">bobjohnson@example.com</p>
-        </div>
-      </div>
-      <button class="btn btn-purple">Cancel Friendship Request</button>
-    </div>
+  {% endfor %}
   </div>
 </div>
 

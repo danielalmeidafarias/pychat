@@ -25,11 +25,10 @@ class AuthMiddleware:
             authorization_cookie = request.cookies.get('authorization')
             try:
                 self.auth_functions.verify_access_token(authorization_cookie)
-
-                response = func(self)
-
+                response = func(*args, **kwargs)
                 return self.auth_functions.set_auth_cookies(response, authorization_cookie)
             except Exception as err:
+                print('authorization_middleware:', err)
                 if request.method == 'GET':
                     if err == "Expired access_token":
                         return redirect('/auth/signin?expired_session=true')

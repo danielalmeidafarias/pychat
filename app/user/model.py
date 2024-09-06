@@ -32,5 +32,7 @@ class User(db.Model):
         name:{self.name}, \
         email: {self.email}, \
         password: {self.password}, \
-        friends:{self.friends}}} \
+        friends:{self.friends} \
+        sent_requests:{self.sent_requests} \
+        received_requests:{self.received_requests}\
         chats: {self.chats}"

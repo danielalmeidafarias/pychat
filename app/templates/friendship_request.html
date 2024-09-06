@@ -9,64 +9,53 @@
   <!-- Received Requests Section -->
   <h2 class="text-dark-green">Received Requests</h2>
   <div class="list-group mb-5">
-    <!-- Example Request 1 -->
+    {% if received|length == 0 %}
+    <div>
+      There are no received friendship requests
+    </div>
+    {% else %}
+    {% for request in received %}
     <div class="list-group-item d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center">
-        <img src="https://via.placeholder.com/50" alt="Sender 1" class="rounded-circle me-3">
+        <img src="http://localhost:5000/media/50/{{ request['sender']['id'] }}" alt="Sender 1" class="rounded-circle me-3">
         <div>
-          <h5 class="mb-1">Alice Johnson</h5>
-          <p class="mb-0">alicejohnson@example.com</p>
+          <h5 class="mb-1">{{ request['sender']['name'] }}</h5>
+          <p class="mb-0">{{ request['sender']['email'] }}</p>
         </div>
       </div>
       <div>
-        <button class="btn btn-light-green me-2">Accept</button>
-        <button class="btn btn-purple">Refuse</button>
+        <button name="accept-btn" id="accept_{{ request['id'] }}" class="btn btn-light-green me-2">Accept</button>
+        <button name="refuse-btn" id="refuse_{{ request['id'] }}" class="btn btn-purple">Refuse</button>
       </div>
     </div>
-
-    <!-- Example Request 2 -->
-    <div class="list-group-item d-flex justify-content-between align-items-center">
-      <div class="d-flex align-items-center">
-        <img src="https://via.placeholder.com/50" alt="Sender 2" class="rounded-circle me-3">
-        <div>
-          <h5 class="mb-1">Chris Evans</h5>
-          <p class="mb-0">chrisevans@example.com</p>
-        </div>
-      </div>
-      <div>
-        <button class="btn btn-light-green me-2">Accept</button>
-        <button class="btn btn-purple">Refuse</button>
-      </div>
-    </div>
+    {% endfor %}
+    {% endif %}
   </div>
 
   <!-- Sent Requests Section -->
   <h2 class="text-dark-green">Sent Requests</h2>
   <div class="list-group">
-    <!-- Example Sent Request 1 -->
+    {% if sent|length < 1 %}
+    <div>
+      There are no sent friendship requests
+    </div>
+    {% else %}
+    {% for request in sent %}
     <div class="list-group-item d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center">
-        <img src="https://via.placeholder.com/50" alt="Receiver 1" class="rounded-circle me-3">
+        <img src="http://localhost:5000/media/50/{{ request['receiver']['id'] }}" alt="Receiver 1" class="rounded-circle me-3">
         <div>
-          <h5 class="mb-1">Bob Smith</h5>
-          <p class="mb-0">bobsmith@example.com</p>
+          <h5 class="mb-1">{{ request['receiver']['name'] }}</h5>
+          <p class="mb-0">{{ request['receiver']['email'] }}</p>
         </div>
       </div>
-      <button class="btn btn-purple">Cancel Request</button>
+      <button name="delete-btn" id="{{ request['id'] }}" class="btn btn-purple">Cancel Request</button>
     </div>
-
-    <!-- Example Sent Request 2 -->
-    <div class="list-group-item d-flex justify-content-between align-items-center">
-      <div class="d-flex align-items-center">
-        <img src="https://via.placeholder.com/50" alt="Receiver 2" class="rounded-circle me-3">
-        <div>
-          <h5 class="mb-1">Dana White</h5>
-          <p class="mb-0">danawhite@example.com</p>
-        </div>
-      </div>
-      <button class="btn btn-purple">Cancel Request</button>
-    </div>
+    {% endfor %}
+    {% endif %}
   </div>
 </div>
+
+<script src="../static/js/friendship_request.js" type="module"></script>
 
 {% endblock %}

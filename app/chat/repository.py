@@ -7,18 +7,20 @@ class ChatRepository:
     def __init__(self, db: SQLAlchemy):
         self.db = db
 
-    def create(self):
-        chat = Chat(chat_id=str(uuid()))
+    def create(self, chat_name: None | str):
+        chat = Chat(chat_id=str(uuid()), chat_name=chat_name)
 
         self.db.session.add(chat)
         self.db.session.commit()
 
         return {
-            "chat_id": chat.id
+            "id": chat.id
         }
 
     def get(self, chat_id: str):
         chat = self.db.session.execute(self.db.select(Chat).where(Chat.id == chat_id)).scalar_one_or_none()
+
+        print(chat)
         return {
             "chat_id": chat.id,
             "members": [

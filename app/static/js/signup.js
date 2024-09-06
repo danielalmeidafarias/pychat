@@ -3,12 +3,17 @@ const signIn = async () => {
     const password = document.getElementById("password").value;
     const name = document.getElementById("name").value;
 
+    const form = new FormData(document.getElementById('signup_form'))
+
     try {
-        await axios.post('http://localhost:5000/user/create', {
-            email,
-            password,
-            name
-        }).then(async (err) => {
+        // await axios.post('http://localhost:5000/user/create', {
+        //     email,
+        //     password,
+        //     name
+        // }).then(async (err) => {
+        //     window.location.reload()
+        // })
+        await axios.post('http://localhost:5000/user/create', form).then(async (err) => {
             window.location.reload()
         })
     } catch (err) {

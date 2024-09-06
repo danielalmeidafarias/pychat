@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from flask import Request
+from flask import Request, make_response, render_template
+from sqlalchemy import Executable
+
 from .schemas import CreateFriendshipRequestSchema, UpdateFriendshipRequestSchema
 from sqlalchemy.exc import NoResultFound, IntegrityError
 from marshmallow.exceptions import ValidationError
@@ -49,7 +51,7 @@ class FriendshipRequestService:
                  auth_functions: AuthFunctions,
                  friendship_repository: FriendshipRepository,
                  chat_repository: ChatRepository,
-                 chat_members_repository: ChatMemberRepository
+                 chat_members_repository: ChatMemberRepository,
                  ):
         self.friendship_request_repository = friendship_request_repository
         self.user_repository = user_repository
@@ -61,7 +63,7 @@ class FriendshipRequestService:
     def create(self, request: Request):
         receiver_id = request.get_json()['receiver_id']
 
-        sender_id = self.auth_functions.decode_jwt((request.headers.get('Authorization')))['user_id']
+        sender_id = self.auth_functions.decode_jwt((request.cookies.get('authorization')))['user_id']
 
         schema = CreateFriendshipRequestSchema()
 
@@ -124,66 +126,75 @@ class FriendshipRequestService:
             }, 500
 
     def get(self, request: Request):
-        status = request.args.get('status')
-        sent = request.args.get('sent')
-        user_id = self.auth_functions.decode_jwt((request.headers.get('Authorization')))['user_id']
+        user_id = self.auth_functions.decode_jwt(request.cookies.get('authorization'))['user_id']
+        user = self.user_repository.get_one(user_id)
 
-        if sent == 'true':
-            friendship_requests = self.friendship_request_repository.get_sent(user_id, status)
-            return friendship_requests
-        elif sent == 'false':
-            friendship_requests = self.friendship_request_repository.get_received(user_id, status)
-            return friendship_requests
-        else:
-            friendship_requests = self.friendship_request_repository.get_all(user_id, status)
-            return friendship_requests
+        received = self.friendship_request_repository.get_received(user_id, None)
+        sent = self.friendship_request_repository.get_sent(user_id, None)
 
-        pass
+        response = make_response(render_template('friendship_request.html', user=user, received=received, sent=sent))
+        return response
 
     def update(self, request: Request, friendship_request_id):
         data = request.get_json()
         schema = UpdateFriendshipRequestSchema()
         validated_data = schema.dump(data)
 
-        user_id = self.auth_functions.decode_jwt(request.headers.get('Authorization'))['user_id']
+        user_id = self.auth_functions.decode_jwt(request.cookies.get('authorization'))['user_id']
 
         try:
             schema.load(validated_data)
         except ValidationError as err:
-            return {'message': 'Data Validation Error!', 'errors': err.messages}, 400
+            return make_response({'message': 'Data Validation Error!', 'errors': err.messages}, 400)
+
 
         try:
             friendship_request = self.friendship_request_repository.get_one_by_id(friendship_request_id)
         except NoResultFound:
-            return {
+            return make_response({
                 "message": "No friendship request with this id was found"
-            }, 404
+            }, 404)
+
 
         if friendship_request['receiver_id'] != user_id:
-            return {
+            return make_response({
                 "message": "The user_id don't correspond to this friendship request's receiver_id"
-            }, 400
+            }, 400)
 
         if validated_data['status'] == 'accepted':
             self.friendship_request_repository.update(friendship_request_id, status='accepted')
 
             self.friendship_repository.create(user_id=user_id, friend_id=friendship_request['sender_id'])
 
-            # new_chat = self.chat_repository.create()
-            #
-            # self.chat_members_repository.create(chat_id=new_chat['id'], user_id=user_id)
-            # self.chat_members_repository.create(chat_id=new_chat['id'], user_id=friendship_request['sender_id'])
+            new_chat = self.chat_repository.create(chat_name=None)
 
-            return {
+            try:
+                self.chat_members_repository.create(chat_id=new_chat['id'], user_id=user_id)
+                self.chat_members_repository.create(chat_id=new_chat['id'], user_id=friendship_request['sender_id'])
+
+            except Exception as err:
+                print(err)
+
+            self.friendship_request_repository.delete(friendship_request_id)
+
+            return make_response({
                 "message": 'friendship request successfully accepted'
-            }, 200
+            }, 200)
         elif validated_data['status'] == 'refused':
             self.friendship_request_repository.update(friendship_request_id, status='refused')
 
-            return {
+            return make_response({
                 "message": 'friendship request successfully refused'
-            }
+            })
 
-    def delete(self):
-        pass
-
+    def delete(self, friendship_request_id: str):
+        try:
+            self.friendship_request_repository.delete(friendship_request_id)
+            return make_response({
+                "message": "Friendship request deleted!"
+            })
+        except Exception as err:
+            print(err)
+            return make_response(
+                {"message": "error"}, 400
+            )

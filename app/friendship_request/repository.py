@@ -1,5 +1,6 @@
 import itertools
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import and_, select
 from .model import FriendshipRequest
 from uuid import uuid4 as uuid
 from .service import FriendshipRequestRepositoryInterface
@@ -23,8 +24,8 @@ class FriendshipRequestRepository(FriendshipRequestRepositoryInterface):
 
     def get_one(self, sender_id: str, receiver_id: str):
         friendship_request = (self.db.session.query(FriendshipRequest)
-                              .where(FriendshipRequest.sender_id == sender_id and
-                                     FriendshipRequest.receiver_id == receiver_id).one_or_none())
+                              .where(and_(FriendshipRequest.sender_id == sender_id,
+                                          FriendshipRequest.receiver_id == receiver_id)).one_or_none())
 
         return friendship_request
 
@@ -53,9 +54,8 @@ class FriendshipRequestRepository(FriendshipRequestRepositoryInterface):
         friendship_requests = [
             {
                 "id": request.id,
-                "sender_id": request.sender_id,
-                "receiver_id": request.receiver_id,
-                "status": request.status
+                "sender": request.sender,
+                "receiver": request.receiver
             }
             for request in data
         ]
@@ -76,9 +76,8 @@ class FriendshipRequestRepository(FriendshipRequestRepositoryInterface):
         friendship_requests = [
             {
                 "id": request.id,
-                "sender_id": request.sender_id,
-                "receiver_id": request.receiver_id,
-                "status": request.status
+                "sender": request.sender,
+                "receiver": request.receiver
             }
             for request in data
         ]
@@ -105,5 +104,5 @@ class FriendshipRequestRepository(FriendshipRequestRepositoryInterface):
         self.db.session.commit()
 
     def delete(self, friendship_request_id: str):
-        pass
-
+        self.db.session.query(FriendshipRequest).where(FriendshipRequest.id == friendship_request_id).delete()
+        self.db.session.commit()

@@ -22,6 +22,11 @@ body {
   background-color: #41B3A2 !important;
 }
 
+.btn-light-green {
+  background-color: #41B3A2 !important;
+  color: white;
+}
+
 .bg-pale-green {
   background-color: #BDE8CA !important;
 }

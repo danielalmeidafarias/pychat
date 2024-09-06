@@ -54,7 +54,7 @@ class ChatWebsocket(SocketIO):
 
         @self.on('message')
         def on_message(data):
-            authorization_cookies = request.cookies.get('Auth')
+            authorization_cookies = request.cookies.get('authorization')
 
             user_id = self.auth_functions.decode_jwt(authorization_cookies)['user_id']
             user = self.user_repository.get_one(user_id)

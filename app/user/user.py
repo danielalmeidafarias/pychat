@@ -50,9 +50,7 @@ class CreateUserResource(Resource):
 class ProfileResource(Resource):
     @auth_middleware
     def get(selt):
-        response = make_response(render_template('profile.html'))
-
-        return response
+        return user_service.user_profile(request=request)
 
     def put(self, recipient_user_id):
         pass

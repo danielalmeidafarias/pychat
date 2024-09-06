@@ -5,9 +5,15 @@ document.addEventListener("DOMContentLoaded", () => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 
-const socket = io("http://localhost:5000", {
-    forceNew: true
-});
+function deleteAllCookies() {
+    document.cookie.split(';').forEach(cookie => {
+        const eqPos = cookie.indexOf('=');
+        const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+        document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    });
+}
+
+const socket = io("http://localhost:5000");
 
 let params = new URLSearchParams(document.location.search)
 
@@ -95,8 +101,16 @@ socket.on('message', (message) => {
 
 socket.on('disconnect', () => {
     Swal.fire({
-      title: "Connection error",
-      text: "",
-      icon: "warning"
-    });
+  title: "Connection Error",
+  text: "Do you want to reload?",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "Reload"
+}).then((result) => {
+  if (result.isConfirmed) {
+    window.location.reload()
+  }
+});
 })
