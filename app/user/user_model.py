@@ -1,10 +1,10 @@
 from app.db import db
-from ..friendship.model import friendship_table
-from ..chat_members.model import chat_members
+from ..friendship.friendship_model import friendship_table
+from ..chat_members.chat_members_model import chat_members
 
 
 class User(db.Model):
-    def __init__(self, user_id: str, name: str, email: str, password: bytes):
+    def __init__(self, user_id: str, name: str, email: str, password: bytes | None = None):
         self.id = user_id
         self.name = name
         self.email = email

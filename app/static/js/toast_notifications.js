@@ -24,10 +24,10 @@ const FasterToast = Swal.mixin({
       showCloseButton: true
 })
 
-const DataValidationError = async (response) => {
+const DataValidationError = async (err) => {
     let errors = ''
     let error_counter = 0
-    for (let error in response.response.data.errors){
+    for (let error in err.response.data.errors){
         errors = errors + `\n ${error_counter = error_counter + 1}. ${err.response.data.errors[error]}`
     }
     await Toast.fire({

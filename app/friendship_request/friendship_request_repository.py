@@ -1,9 +1,9 @@
 import itertools
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import and_, select
-from .model import FriendshipRequest
+from sqlalchemy import and_
+from .friendship_request_model import FriendshipRequest
 from uuid import uuid4 as uuid
-from .service import FriendshipRequestRepositoryInterface
+from .friendship_request_service import FriendshipRequestRepositoryInterface
 
 
 class FriendshipRequestRepository(FriendshipRequestRepositoryInterface):

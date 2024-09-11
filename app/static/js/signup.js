@@ -6,13 +6,6 @@ const signIn = async () => {
     const form = new FormData(document.getElementById('signup_form'))
 
     try {
-        // await axios.post('http://localhost:5000/user/create', {
-        //     email,
-        //     password,
-        //     name
-        // }).then(async (err) => {
-        //     window.location.reload()
-        // })
         await axios.post('http://localhost:5000/user/create', form).then(async (err) => {
             window.location.reload()
         })

@@ -2,18 +2,18 @@ import pytest
 from flask import Flask
 from flask_restx import Api
 from app.db import db
-from app.user.user import user_namespace
-from app.auth.auth import auth_namespace
-from app.friendship_request.friendship_request import friendship_request_namespace
+from app.user.user_controller import user_namespace
+from app.auth.auth_controller import auth_namespace
+from app.friendship_request.friendship_request_controller import friendship_request_namespace
 import datetime
 import jwt
 import os
-from app.user.repository import UserRepository
-from app.friendship.repository import FriendshipRepository
-from app.friendship_request.repository import FriendshipRequestRepository
-from app.chat.repository import ChatRepository
-from app.chat_members.repository import ChatMemberRepository
-from app.message.repository import MessageRepository
+from app.user.user_repository import UserRepository
+from app.friendship.friendship_repository import FriendshipRepository
+from app.friendship_request.friendship_request_repository import FriendshipRequestRepository
+from app.chat.chat_repository import ChatRepository
+from app.chat_members.chat_members_repository import ChatMemberRepository
+from app.message.message_repository import MessageRepository
 from flask_socketio import test_client
 from flask_socketio.test_client import SocketIOTestClient
 from app.chat.websocket import Websocket

@@ -1,38 +1,11 @@
 from flask import Request, make_response, render_template
 from sqlalchemy.exc import NoResultFound
-from .schemas import CreateUserSchema
-from marshmallow import ValidationError
 import uuid
 import bcrypt
 from sqlalchemy.exc import IntegrityError
-from abc import ABC, abstractmethod
-from typing import Optional
 from ..auth.util import AuthFunctions
-from werkzeug.utils import secure_filename
-from PIL import Image
-import os
 from media.util import save_profile_pic
-
-
-class UserRepositoryInterface(ABC):
-    @abstractmethod
-    def create(self, user_id:str, email:str, password:bytes, name:str):
-        pass
-
-    @abstractmethod
-    def get_one(self, user_id):
-        pass
-
-    def get_one_by_email(self, email):
-        pass
-
-    @abstractmethod
-    def get_all(self):
-        pass
-
-    @abstractmethod
-    def update(self, user_id: str, email: Optional[str], name: Optional[str], password: Optional[bytes]):
-        pass
+from .interfaces.user_repository_interface import UserRepositoryInterface
 
 
 class UserService:
@@ -79,20 +52,12 @@ class UserService:
         data = request.form.to_dict()
         profile_pic = request.files['picture']
 
-        schema = CreateUserSchema()
-        validated_data = schema.dump(data)
-
-        try:
-            schema.load(validated_data)
-        except ValidationError as err:
-            return {"message": "Data Validation Error!", "errors": err.messages}, 400
-
         try:
             new_user = self.user_repository.create(
                 user_id= str(uuid.uuid4()),
-                email=validated_data['email'],
-                password=bcrypt.hashpw(str.encode(validated_data["password"]), bcrypt.gensalt()),
-                name=validated_data['name']
+                email=data['email'],
+                password=bcrypt.hashpw(str.encode(data["password"]), bcrypt.gensalt()),
+                name=data['name']
             )
 
             save_profile_pic(profile_pic, new_user.id)

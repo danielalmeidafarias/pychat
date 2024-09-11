@@ -1,10 +1,12 @@
 from flask import request
 from flask_restx import Resource, Namespace
 from marshmallow.exceptions import ValidationError
-from .schemas import CreateChat_membersSchema, UpdateChat_membersSchema
+from .chat_members_schemas import CreateChatMembersSchema, UpdateChatMembersSchema, GetChatMembersSchema
 from .docs.response_models import Chat_membersResponseModels
 from .docs.request_models import Chat_membersRequestModels
 from app.common.docs.response_models import CommonResponseModels
+from ..chat.chat_schemas import GetChatSchema
+from ..middlewares.validate_route_middleware import ValidateRouteMiddleware
 
 
 chat_members_namespace = Namespace('chat_members', 'Chat_members Route')
@@ -18,32 +20,19 @@ common_responses = CommonResponseModels(chat_members_namespace)
 @chat_members_namespace.response(code=409, model=common_responses.unauthorized, description='Unauthorized')
 @chat_members_namespace.route('')
 class Chat_membersResource(Resource):
+    @ValidateRouteMiddleware(GetChatSchema).middleware
     def get(self):
         pass
 
+    @ValidateRouteMiddleware(UpdateChatMembersSchema).middleware
     def post(self):
-        data = request.get_json()
-        schema = CreateChat_membersSchema()
-        validated_data = schema.dump(data)
-
-        try:
-            schema.load(validated_data)
-        except ValidationError as err:
-            return {'message': 'Data Validation Error!', 'errors': err.messages}, 400
         pass
 
 
-@chat_members_namespace.route('/<id>')
+@chat_members_namespace.route('/<chat_id>/<user_id>')
 class UniqueChat_membersResource(Resource):
+    @ValidateRouteMiddleware(UpdateChatMembersSchema).middleware
     def put(self):
-        data = request.get_json()
-        schema = UpdateChat_membersSchema()
-        validated_data = schema.dump(data)
-
-        try:
-            schema.load(validated_data)
-        except ValidationError as err:
-            return {'message': 'Data Validation Error!', 'errors': err.messages}, 400
         pass
 
     def delete(self):

@@ -1,13 +1,13 @@
-from .model import User
+from .user_model import User
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import select
-from .schemas import UpdateUserSchema
-from .service import UserRepositoryInterface
+from .user_schemas import UpdateUserSchema
+from .interfaces.user_repository_interface import UserRepositoryInterface, UserResponse
 from typing import Optional
 
 class UserRepository(UserRepositoryInterface):
     def __init__(self, db: SQLAlchemy):
-        self.db = db
+        super().__init__(db)
 
     def create(self, user_id: str, email: str, password: bytes, name: str):
         new_user = User(
@@ -24,9 +24,8 @@ class UserRepository(UserRepositoryInterface):
 
     def get_one(self, user_id: str):
         user = self.db.session.execute(select(User).where(User.id == user_id)).scalar_one()
-        # print(user)
         return {
-                "id": user_id,
+                id: user_id,
                 "name": user.name,
                 "email": user.email,
                 "password": user.password,

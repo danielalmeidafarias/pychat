@@ -1,13 +1,14 @@
 from flask import request, make_response, render_template
 from flask_restx import Resource, Namespace
 from marshmallow.exceptions import ValidationError
-from .schemas import CreateFriendshipSchema, UpdateFriendshipSchema
+from .friendship_schemas import GetFriendshipSchema
 from .docs.response_models import FriendshipResponseModels
 from .docs.request_models import FriendshipRequestModels
 from app.common.docs.response_models import CommonResponseModels
 from ..middlewares.auth_middleware import auth_middleware
+from ..middlewares.validate_route_middleware import ValidateRouteMiddleware
 from ..auth.util import auth_functions
-from ..user.user import user_repository
+from ..user.user_controller import user_repository
 
 friendship_namespace = Namespace('friendship', 'Friendship Route')
 requests = FriendshipRequestModels(friendship_namespace)
@@ -21,6 +22,7 @@ common_responses = CommonResponseModels(friendship_namespace)
 @friendship_namespace.route('')
 class FriendshipResource(Resource):
     @auth_middleware
+    @ValidateRouteMiddleware(GetFriendshipSchema).middleware
     def get(self):
         user_id = auth_functions.decode_jwt(request.cookies.get('authorization'))['user_id']
         user = user_repository.get_one(user_id)
@@ -35,33 +37,7 @@ class FriendshipResource(Resource):
 
         return response
 
-
-    def post(self):
-        data = request.get_json()
-        user_repository.search(data['name'])
-        pass
-        # schema = CreateFriendshipSchema()
-        # validated_data = schema.dump(data)
-        #
-        # try:
-        #     schema.load(validated_data)
-        # except ValidationError as err:
-        #     return {'message': 'Data Validation Error!', 'errors': err.messages}, 400
-        # pass
-
-
 @friendship_namespace.route('/<id>')
 class UniqueFriendshipResource(Resource):
-    def put(self):
-        data = request.get_json()
-        schema = UpdateFriendshipSchema()
-        validated_data = schema.dump(data)
-
-        try:
-            schema.load(validated_data)
-        except ValidationError as err:
-            return {'message': 'Data Validation Error!', 'errors': err.messages}, 400
-        pass
-
     def delete(self):
         pass

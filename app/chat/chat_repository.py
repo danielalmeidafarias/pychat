@@ -28,9 +28,6 @@ class ChatRepository:
             "messages": chat.messages
         }
 
-    def get_all(self):
-        pass
-
     def update(self, chat_id: str):
         pass
 

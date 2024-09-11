@@ -1,10 +1,10 @@
 from sqlalchemy.exc import NoResultFound
-from app.auth.schemas import SignInSchema
+from app.auth.auth_schemas import SignInSchema
 from flask import Request, make_response, render_template
 from marshmallow import ValidationError
 import datetime
 from redis import Redis
-from ..user.service import UserRepositoryInterface
+from ..user.user_service import UserRepositoryInterface
 from .util import AuthFunctions
 
 class AuthService:

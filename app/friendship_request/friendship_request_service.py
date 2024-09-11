@@ -1,15 +1,13 @@
 from abc import ABC, abstractmethod
 from flask import Request, make_response, render_template
-from sqlalchemy import Executable
-
-from .schemas import CreateFriendshipRequestSchema, UpdateFriendshipRequestSchema
+from .friendship_request_schemas import CreateFriendshipRequestSchema, UpdateFriendshipRequestSchema
 from sqlalchemy.exc import NoResultFound, IntegrityError
 from marshmallow.exceptions import ValidationError
-from ..user.service import UserRepositoryInterface
+from ..user.user_service import UserRepositoryInterface
 from ..auth.util import AuthFunctions
-from ..friendship.repository import FriendshipRepository
-from ..chat.repository import ChatRepository
-from ..chat_members.repository import ChatMemberRepository
+from ..friendship.friendship_repository import FriendshipRepository
+from ..chat.chat_repository import ChatRepository
+from ..chat_members.chat_members_repository import ChatMemberRepository
 
 class FriendshipRequestRepositoryInterface(ABC):
     @abstractmethod

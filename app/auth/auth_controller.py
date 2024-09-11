@@ -5,11 +5,9 @@ from .docs.response_models import AuthResponseModels
 from .docs.request_models import AuthRequestModels
 from ..common.docs.response_models import CommonResponseModels
 from ..middlewares.redirect_auth_middleware import redirect_auth_middleware
-from ..middlewares.blocked_ip_middleware import blocked_ip_middleware
-from ..middlewares.ddos_protect_middleware import ddos_protect_middleware
 from app.db import db, r
-from .service import AuthService
-from ..user.repository import UserRepository
+from .auth_service import AuthService
+from ..user.user_repository import UserRepository
 
 
 load_dotenv()
@@ -21,24 +19,10 @@ user_repository = UserRepository(db)
 auth_service = AuthService(user_repository, r=r)
 
 
-@auth_namespace.route('/redirect')
 @auth_namespace.response(code=500, model=common_responses.internal_error, description='Something went wrong')
 @auth_namespace.response(code=400, model=common_responses.data_validation_error, description='Data Validation Error')
 @auth_namespace.response(code=401, model=common_responses.unauthorized, description='Unauthorized')
 @auth_namespace.response(code=404, model=common_responses.no_user_found, description='No User Found')
-class AuthResource(Resource):
-    @ddos_protect_middleware
-    @blocked_ip_middleware
-    @auth_namespace.expect(requests.signin)
-    @auth_namespace.response(model=responses.post_200, description="Success", code=200)
-    def post(self):
-        # route to authenticate user's in every request
-        pass
-
-    def get(self):
-        # route to authenticate user's in every request
-        pass
-
 @auth_namespace.route('/signin')
 class SignInResource(Resource):
     def post(self):

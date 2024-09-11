@@ -1,10 +1,11 @@
 from flask import request
 from flask_restx import Resource, Namespace
 from marshmallow.exceptions import ValidationError
-from .schemas import CreateMessageSchema, UpdateMessageSchema
+from .message_schemas import CreateMessageSchema, UpdateMessageSchema, GetMessageSchema
 from .docs.response_models import MessageResponseModels
 from .docs.request_models import MessageRequestModels
 from app.common.docs.response_models import CommonResponseModels
+from ..middlewares.validate_route_middleware import ValidateRouteMiddleware
 
 
 message_namespace = Namespace('message', 'Message Route')
@@ -18,9 +19,11 @@ common_responses = CommonResponseModels(message_namespace)
 @message_namespace.response(code=409, model=common_responses.unauthorized, description='Unauthorized')
 @message_namespace.route('')
 class MessageResource(Resource):
+    @ValidateRouteMiddleware(GetMessageSchema).middleware
     def get(self):
         pass
 
+    @ValidateRouteMiddleware(CreateMessageSchema).middleware
     def post(self):
         data = request.get_json()
         schema = CreateMessageSchema()
@@ -35,6 +38,7 @@ class MessageResource(Resource):
 
 @message_namespace.route('/<id>')
 class UniqueMessageResource(Resource):
+    @ValidateRouteMiddleware(UpdateMessageSchema).middleware
     def put(self):
         data = request.get_json()
         schema = UpdateMessageSchema()

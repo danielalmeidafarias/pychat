@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from .model import friendship_table
+from .friendship_model import friendship_table
 from sqlalchemy import and_
 
 

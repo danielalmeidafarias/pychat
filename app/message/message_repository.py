@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from .model import Message
+from .message_model import Message
 from uuid import uuid4 as uuid
 
 

@@ -1,6 +1,7 @@
 from marshmallow import Schema, fields, ValidationError
 from password_strength import PasswordPolicy
 
+
 password_policy = PasswordPolicy.from_names(
     length=8,
     uppercase=1,
@@ -30,10 +31,12 @@ class CreateUserSchema(Schema):
 
 
 class UpdateUserSchema(Schema):
-    def __init__(self):
-        super().__init__()
-        self.strict = True
+    name = fields.Str(required=False, allow_none=True)
+    email = fields.Email(required=False, allow_none=True)
+    password = StrongPassword(required=False, allow_none=True)
 
-    name = fields.Str(allow_none=True)
-    email = fields.Email(allow_none=True)
-    password = StrongPassword(allow_none=True)
+
+class GetUserSchema(Schema):
+    user_id = fields.Integer(required=False, allow_none=True)
+    name = fields.Str(required=False, allow_none=True)
+    email = fields.Email(required=False, allow_none=True)

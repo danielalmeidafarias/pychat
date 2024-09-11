@@ -2,13 +2,12 @@ from flask_socketio import SocketIO
 from flask import request, Flask
 from ..auth.util import AuthFunctions
 from typing import List
-from ..chat.repository import ChatRepository
-from ..message.repository import MessageRepository
-from ..user.repository import UserRepository
+from ..chat.chat_repository import ChatRepository
+from ..message.message_repository import MessageRepository
+from ..user.user_repository import UserRepository
 from flask_sqlalchemy import SQLAlchemy
-from ..message.schemas import CreateMessageSchema
+from ..message.message_schemas import CreateMessageSchema
 from marshmallow.exceptions import ValidationError
-from ..middlewares.auth_ws_middleware import auth_ws_middleware
 
 
 class ChatWebsocket(SocketIO):

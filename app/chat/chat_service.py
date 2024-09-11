@@ -1,5 +1,5 @@
-from ..user.repository import UserRepository
-from .repository import ChatRepository
+from ..user.user_repository import UserRepository
+from .chat_repository import ChatRepository
 from flask_sqlalchemy import SQLAlchemy
 from ..auth.util import AuthFunctions
 from flask import request, make_response, render_template, url_for
