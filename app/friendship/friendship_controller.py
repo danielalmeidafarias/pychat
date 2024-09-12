@@ -6,6 +6,8 @@ from .docs.response_models import FriendshipResponseModels
 from .docs.request_models import FriendshipRequestModels
 from app.common.docs.response_models import CommonResponseModels
 from ..middlewares.auth_middleware import auth_middleware
+from ..middlewares.blocked_ip_middleware import blocked_ip_middleware
+from ..middlewares.ddos_protect_middleware import ddos_protect_middleware
 from ..middlewares.validate_data_middleware import ValidateDataMiddleware
 from ..auth.util import auth_functions
 from ..user.user_controller import user_repository
@@ -21,6 +23,8 @@ common_responses = CommonResponseModels(friendship_namespace)
 @friendship_namespace.response(code=409, model=common_responses.unauthorized, description='Unauthorized')
 @friendship_namespace.route('')
 class FriendshipResource(Resource):
+    @ddos_protect_middleware
+    @blocked_ip_middleware
     @auth_middleware
     @ValidateDataMiddleware(GetFriendshipSchema).middleware
     def get(self):
@@ -39,5 +43,8 @@ class FriendshipResource(Resource):
 
 @friendship_namespace.route('/<id>')
 class UniqueFriendshipResource(Resource):
+    @ddos_protect_middleware
+    @blocked_ip_middleware
+    @auth_middleware
     def delete(self):
         pass

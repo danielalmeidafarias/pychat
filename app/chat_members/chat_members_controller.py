@@ -6,6 +6,9 @@ from .docs.response_models import Chat_membersResponseModels
 from .docs.request_models import Chat_membersRequestModels
 from app.common.docs.response_models import CommonResponseModels
 from ..chat.chat_schemas import GetChatSchema
+from ..middlewares.auth_middleware import auth_middleware
+from ..middlewares.blocked_ip_middleware import blocked_ip_middleware
+from ..middlewares.ddos_protect_middleware import ddos_protect_middleware
 from ..middlewares.validate_data_middleware import ValidateDataMiddleware
 
 
@@ -20,10 +23,17 @@ common_responses = CommonResponseModels(chat_members_namespace)
 @chat_members_namespace.response(code=409, model=common_responses.unauthorized, description='Unauthorized')
 @chat_members_namespace.route('')
 class Chat_membersResource(Resource):
+    @ddos_protect_middleware
+    @blocked_ip_middleware
+    @auth_middleware
     @ValidateDataMiddleware(GetChatSchema).middleware
     def get(self):
         pass
 
+
+    @ddos_protect_middleware
+    @blocked_ip_middleware
+    @auth_middleware
     @ValidateDataMiddleware(UpdateChatMembersSchema).middleware
     def post(self):
         pass
@@ -31,9 +41,16 @@ class Chat_membersResource(Resource):
 
 @chat_members_namespace.route('/<chat_id>/<user_id>')
 class UniqueChat_membersResource(Resource):
+    @ddos_protect_middleware
+    @blocked_ip_middleware
+    @auth_middleware
     @ValidateDataMiddleware(UpdateChatMembersSchema).middleware
     def put(self):
         pass
 
+
+    @ddos_protect_middleware
+    @blocked_ip_middleware
+    @auth_middleware
     def delete(self):
         pass

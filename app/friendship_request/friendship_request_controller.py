@@ -5,6 +5,8 @@ from .docs.response_models import Friendship_requestResponseModels
 from .docs.request_models import Friendship_requestRequestModels
 from app.common.docs.response_models import CommonResponseModels
 from .friendship_request_schemas import GetFriendshipRequestSchema, CreateFriendshipRequestSchema, UpdateFriendshipRequestSchema
+from ..middlewares.blocked_ip_middleware import blocked_ip_middleware
+from ..middlewares.ddos_protect_middleware import ddos_protect_middleware
 from ..user.user_repository import UserRepository
 from .friendship_request_repository import FriendshipRequestRepository
 from ..auth.util import auth_functions
@@ -39,22 +41,33 @@ friendship_request_service = FriendshipRequestService(
 @friendship_request_namespace.response(code=409, model=common_responses.unauthorized, description='Unauthorized')
 @friendship_request_namespace.route('')
 class FriendshipRequestResource(Resource):
+    @ddos_protect_middleware
+    @blocked_ip_middleware
     @auth_middleware
     @ValidateDataMiddleware(GetFriendshipRequestSchema).middleware
     def get(self):
         return friendship_request_service.get(request=request)
 
+    @ddos_protect_middleware
+    @blocked_ip_middleware
+    @auth_middleware
     @ValidateDataMiddleware(CreateFriendshipRequestSchema).middleware
     def post(self):
         return friendship_request_service.create(request)
 
 @friendship_request_namespace.route('/<friendship_request_id>')
 class UniqueFriendshipRequestResource(Resource):
+    @ddos_protect_middleware
+    @blocked_ip_middleware
+    @auth_middleware
     @auth_middleware
     @ValidateDataMiddleware(UpdateFriendshipRequestSchema).middleware
     def put(self, friendship_request_id):
         return friendship_request_service.update(request, friendship_request_id)
 
+
+    @ddos_protect_middleware
+    @blocked_ip_middleware
     @auth_middleware
     def delete(self, friendship_request_id):
         return friendship_request_service.delete(friendship_request_id)

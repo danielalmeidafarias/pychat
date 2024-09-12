@@ -40,7 +40,8 @@ class CreateUserResource(Resource):
         response = make_response(render_template('signup.html'))
         return response
 
-
+    @ddos_protect_middleware
+    @blocked_ip_middleware
     @ValidateDataMiddleware(CreateUserSchema).middleware
     @user_namespace.expect(requests.crate_user)
     @user_namespace.response(model=responses.post_201, description="Created!", code=201)
@@ -51,14 +52,23 @@ class CreateUserResource(Resource):
 
 @user_namespace.route('/profile')
 class ProfileResource(Resource):
+    @ddos_protect_middleware
+    @blocked_ip_middleware
     @auth_middleware
     def get(self):
         return user_service.user_profile(request=request)
 
 
+    @ddos_protect_middleware
+    @blocked_ip_middleware
+    @auth_middleware
     @ValidateDataMiddleware(UpdateUserSchema).middleware
     def put(self, recipient_user_id):
         pass
 
+
+    @ddos_protect_middleware
+    @blocked_ip_middleware
+    @auth_middleware
     def delete(self, recipient_user_id):
         pass

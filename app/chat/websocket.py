@@ -8,6 +8,7 @@ from ..user.user_repository import UserRepository
 from flask_sqlalchemy import SQLAlchemy
 from ..message.message_schemas import CreateMessageSchema
 from marshmallow.exceptions import ValidationError
+from ..middlewares.auth_ws_middleware import auth_ws_middleware
 
 
 class ChatWebsocket(SocketIO):
@@ -24,7 +25,7 @@ class ChatWebsocket(SocketIO):
 
     def register_handlers(self):
         @self.on('connect')
-        # @auth_ws_middleware
+        @auth_ws_middleware
         def on_connect():
             socketio_id = request.sid
             authorization_cookies = request.cookies.get('authorization')
@@ -51,6 +52,7 @@ class ChatWebsocket(SocketIO):
                     self.connected.pop(connected_key[index])
 
         @self.on('message')
+        @auth_ws_middleware
         def on_message(data):
             print('connected:', self.connected)
             authorization_cookies = request.cookies.get('authorization')

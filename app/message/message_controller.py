@@ -5,6 +5,9 @@ from .message_schemas import CreateMessageSchema, UpdateMessageSchema, GetMessag
 from .docs.response_models import MessageResponseModels
 from .docs.request_models import MessageRequestModels
 from app.common.docs.response_models import CommonResponseModels
+from ..middlewares.auth_middleware import auth_middleware
+from ..middlewares.blocked_ip_middleware import blocked_ip_middleware
+from ..middlewares.ddos_protect_middleware import ddos_protect_middleware
 from ..middlewares.validate_data_middleware import ValidateDataMiddleware
 
 
@@ -19,10 +22,16 @@ common_responses = CommonResponseModels(message_namespace)
 @message_namespace.response(code=409, model=common_responses.unauthorized, description='Unauthorized')
 @message_namespace.route('')
 class MessageResource(Resource):
+    @ddos_protect_middleware
+    @blocked_ip_middleware
+    @auth_middleware
     @ValidateDataMiddleware(GetMessageSchema).middleware
     def get(self):
         pass
 
+    @ddos_protect_middleware
+    @blocked_ip_middleware
+    @auth_middleware
     @ValidateDataMiddleware(CreateMessageSchema).middleware
     def post(self):
 
@@ -31,9 +40,15 @@ class MessageResource(Resource):
 
 @message_namespace.route('/<id>')
 class UniqueMessageResource(Resource):
+    @ddos_protect_middleware
+    @blocked_ip_middleware
+    @auth_middleware
     @ValidateDataMiddleware(UpdateMessageSchema).middleware
     def put(self):
         pass
 
+    @ddos_protect_middleware
+    @blocked_ip_middleware
+    @auth_middleware
     def delete(self):
         pass

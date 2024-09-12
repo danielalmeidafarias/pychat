@@ -38,9 +38,11 @@ class DDOSProtectMiddleware:
                     'first_request': first_request,
                     'last_request': datetime_to_string(datetime.now()),
                 })
-                r.expireat(f"ip_address:{ip_address}", datetime.now() + timedelta(minutes=1))
+                r.expireat(f"ip_address:{ip_address}", datetime.now() + timedelta(seconds=1))
 
                 requests_per_second = (int(requests) + 1) / seconds_since_first_request
+
+                print(requests_per_second)
 
                 if requests_per_second > 1 and int(requests) + 1 >= 30:
                     r.set(f"blocked_ip:{ip_address}", 1)
