@@ -12,7 +12,7 @@ from .user_repository import UserRepository
 from .user_service import UserService
 from ..middlewares.auth_middleware import auth_middleware
 from ..middlewares.redirect_auth_middleware import redirect_auth_middleware
-from ..middlewares.validate_route_middleware import ValidateRouteMiddleware
+from ..middlewares.validate_data_middleware import ValidateDataMiddleware
 
 user_namespace = Namespace('user', 'User Route')
 requests = UserRequestModels(user_namespace)
@@ -28,11 +28,10 @@ user_service = UserService(user_repository, auth_functions)
 @user_namespace.response(code=401, model=common_responses.unauthorized, description='Unauthorized')
 @user_namespace.response(code=404, model=common_responses.no_user_found, description='No user found')
 class CreateUserResource(Resource):
-
     @ddos_protect_middleware
     @blocked_ip_middleware
     @redirect_auth_middleware
-    @ValidateRouteMiddleware(GetUserSchema).middleware
+    @ValidateDataMiddleware(GetUserSchema).middleware
     @user_namespace.header('Authorization', 'Authorization access token')
     @user_namespace.param('user_id')
     @user_namespace.response(code=200, model=responses.get_all_200, description='All users')
@@ -42,7 +41,7 @@ class CreateUserResource(Resource):
         return response
 
 
-    @ValidateRouteMiddleware(CreateUserSchema).middleware
+    @ValidateDataMiddleware(CreateUserSchema).middleware
     @user_namespace.expect(requests.crate_user)
     @user_namespace.response(model=responses.post_201, description="Created!", code=201)
     @user_namespace.response(model=responses.post_409, description="Conflict", code=409)
@@ -57,7 +56,7 @@ class ProfileResource(Resource):
         return user_service.user_profile(request=request)
 
 
-    @ValidateRouteMiddleware(UpdateUserSchema).middleware
+    @ValidateDataMiddleware(UpdateUserSchema).middleware
     def put(self, recipient_user_id):
         pass
 

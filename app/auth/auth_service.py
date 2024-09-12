@@ -17,29 +17,19 @@ class AuthService:
         try:
             data = request.get_json()
 
-            schema = SignInSchema()
-            validated_data = schema.dump(data)
-
-            auth_functions = AuthFunctions()
-
             try:
-                schema.load(validated_data)
-            except ValidationError as err:
-                return {"message": "Data Validation Error!", "errors": err.messages}, 400
-
-            try:
-                user = self.user_repository.get_one_by_email(validated_data['email'])
+                user = self.user_repository.get_one_by_email(data['email'])
             except NoResultFound:
                 return {
                     "message": "No user with this credentials was found, please check the email"
                 }, 404
 
-            is_password_correct = auth_functions.is_password_correct(validated_data['password'], user['password'])
+            is_password_correct = self.auth_functions.is_password_correct(data['password'], user['password'])
 
             if is_password_correct:
                 self.r.delete(f"login_count:{user['id']}")
 
-                access_token = auth_functions.get_access_token(user['id'])
+                access_token = self.auth_functions.get_access_token(user['id'])
                 response = make_response("Login successful")
                 response.set_cookie('authorization', access_token, samesite='Lax', httponly=True)
                 # response.set_cookie('authorization', access_token, httponly=True, secure=True, samesite='Lax')

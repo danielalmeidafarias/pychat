@@ -8,7 +8,7 @@ from app.common.docs.response_models import CommonResponseModels
 from .chat_service import ChatService
 from app.db import db
 from ..middlewares.auth_middleware import auth_middleware
-from ..middlewares.validate_route_middleware import ValidateRouteMiddleware
+from ..middlewares.validate_data_middleware import ValidateDataMiddleware
 
 
 chat_namespace = Namespace('chat', 'Chat Route')
@@ -23,36 +23,20 @@ chat_service = ChatService(db)
 @chat_namespace.response(code=409, model=common_responses.unauthorized, description='Unauthorized')
 @chat_namespace.route('')
 class ChatResource(Resource):
-    @ValidateRouteMiddleware(GetChatSchema).middleware
+    @ValidateDataMiddleware(GetChatSchema).middleware
     @auth_middleware
     def get(self):
         return chat_service.get_chats()
 
-    @ValidateRouteMiddleware(CreateChatSchema).middleware
+    @ValidateDataMiddleware(CreateChatSchema).middleware
     def post(self):
-        data = request.get_json()
-        schema = CreateChatSchema()
-        validated_data = schema.dump(data)
-
-        try:
-            schema.load(validated_data)
-        except ValidationError as err:
-            return {'message': 'Data Validation Error!', 'errors': err.messages}, 400
         pass
-
 
 @chat_namespace.route('/<id>')
 class UniqueChatResource(Resource):
-    @ValidateRouteMiddleware(UpdateChatSchema).middleware
+    @ValidateDataMiddleware(UpdateChatSchema).middleware
     def put(self):
-        data = request.get_json()
-        schema = UpdateChatSchema()
-        validated_data = schema.dump(data)
 
-        try:
-            schema.load(validated_data)
-        except ValidationError as err:
-            return {'message': 'Data Validation Error!', 'errors': err.messages}, 400
         pass
 
     def delete(self):

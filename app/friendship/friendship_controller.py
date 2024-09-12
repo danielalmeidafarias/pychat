@@ -6,7 +6,7 @@ from .docs.response_models import FriendshipResponseModels
 from .docs.request_models import FriendshipRequestModels
 from app.common.docs.response_models import CommonResponseModels
 from ..middlewares.auth_middleware import auth_middleware
-from ..middlewares.validate_route_middleware import ValidateRouteMiddleware
+from ..middlewares.validate_data_middleware import ValidateDataMiddleware
 from ..auth.util import auth_functions
 from ..user.user_controller import user_repository
 
@@ -22,7 +22,7 @@ common_responses = CommonResponseModels(friendship_namespace)
 @friendship_namespace.route('')
 class FriendshipResource(Resource):
     @auth_middleware
-    @ValidateRouteMiddleware(GetFriendshipSchema).middleware
+    @ValidateDataMiddleware(GetFriendshipSchema).middleware
     def get(self):
         user_id = auth_functions.decode_jwt(request.cookies.get('authorization'))['user_id']
         user = user_repository.get_one(user_id)

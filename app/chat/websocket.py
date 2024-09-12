@@ -27,11 +27,7 @@ class ChatWebsocket(SocketIO):
         # @auth_ws_middleware
         def on_connect():
             socketio_id = request.sid
-
-            print('1', socketio_id)
-
             authorization_cookies = request.cookies.get('authorization')
-            print('2', authorization_cookies)
             user_id = self.auth_functions.decode_jwt(authorization_cookies)['user_id']
 
             self.connected[user_id] = socketio_id

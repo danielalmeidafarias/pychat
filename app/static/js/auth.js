@@ -16,6 +16,7 @@ const signIn = async () => {
     }).then(async (data) => {
         window.location.reload()
     }).catch(async (err) => {
+        console.log(err)
         if(err.status == 401) {
             BaseResponse(err, 'error')
         } else if(err.status == 404){

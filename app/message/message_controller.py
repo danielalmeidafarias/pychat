@@ -5,7 +5,7 @@ from .message_schemas import CreateMessageSchema, UpdateMessageSchema, GetMessag
 from .docs.response_models import MessageResponseModels
 from .docs.request_models import MessageRequestModels
 from app.common.docs.response_models import CommonResponseModels
-from ..middlewares.validate_route_middleware import ValidateRouteMiddleware
+from ..middlewares.validate_data_middleware import ValidateDataMiddleware
 
 
 message_namespace = Namespace('message', 'Message Route')
@@ -19,35 +19,20 @@ common_responses = CommonResponseModels(message_namespace)
 @message_namespace.response(code=409, model=common_responses.unauthorized, description='Unauthorized')
 @message_namespace.route('')
 class MessageResource(Resource):
-    @ValidateRouteMiddleware(GetMessageSchema).middleware
+    @ValidateDataMiddleware(GetMessageSchema).middleware
     def get(self):
         pass
 
-    @ValidateRouteMiddleware(CreateMessageSchema).middleware
+    @ValidateDataMiddleware(CreateMessageSchema).middleware
     def post(self):
-        data = request.get_json()
-        schema = CreateMessageSchema()
-        validated_data = schema.dump(data)
 
-        try:
-            schema.load(validated_data)
-        except ValidationError as err:
-            return {'message': 'Data Validation Error!', 'errors': err.messages}, 400
         pass
 
 
 @message_namespace.route('/<id>')
 class UniqueMessageResource(Resource):
-    @ValidateRouteMiddleware(UpdateMessageSchema).middleware
+    @ValidateDataMiddleware(UpdateMessageSchema).middleware
     def put(self):
-        data = request.get_json()
-        schema = UpdateMessageSchema()
-        validated_data = schema.dump(data)
-
-        try:
-            schema.load(validated_data)
-        except ValidationError as err:
-            return {'message': 'Data Validation Error!', 'errors': err.messages}, 400
         pass
 
     def delete(self):

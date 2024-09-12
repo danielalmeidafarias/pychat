@@ -38,5 +38,4 @@ class UpdateUserSchema(Schema):
 
 class GetUserSchema(Schema):
     user_id = fields.Integer(required=False, allow_none=True)
-    name = fields.Str(required=False, allow_none=True)
-    email = fields.Email(required=False, allow_none=True)
+

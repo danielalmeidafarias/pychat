@@ -32,7 +32,7 @@ search_btn.addEventListener('click', (e) => {
 
     e.preventDefault()
     if(name){
-        document.location = `http://localhost:5000/friendship?search=${name}`
+        document.location = `http://localhost:5000/friendship?name=${name}`
     }
 })
 

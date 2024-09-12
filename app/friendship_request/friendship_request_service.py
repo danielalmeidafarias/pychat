@@ -63,18 +63,6 @@ class FriendshipRequestService:
 
         sender_id = self.auth_functions.decode_jwt((request.cookies.get('authorization')))['user_id']
 
-        schema = CreateFriendshipRequestSchema()
-
-        validated_data = schema.dump({
-            "receiver_id": receiver_id,
-            "sender_id": sender_id,
-        })
-
-        try:
-            schema.load(validated_data)
-        except ValidationError as err:
-            return {'message': 'Data Validation Error!', 'errors': err.messages}, 400
-
         try:
             sender_user = self.user_repository.get_one(sender_id)
         except NoResultFound:
@@ -135,16 +123,8 @@ class FriendshipRequestService:
 
     def update(self, request: Request, friendship_request_id):
         data = request.get_json()
-        schema = UpdateFriendshipRequestSchema()
-        validated_data = schema.dump(data)
 
         user_id = self.auth_functions.decode_jwt(request.cookies.get('authorization'))['user_id']
-
-        try:
-            schema.load(validated_data)
-        except ValidationError as err:
-            return make_response({'message': 'Data Validation Error!', 'errors': err.messages}, 400)
-
 
         try:
             friendship_request = self.friendship_request_repository.get_one_by_id(friendship_request_id)
@@ -159,7 +139,7 @@ class FriendshipRequestService:
                 "message": "The user_id don't correspond to this friendship request's receiver_id"
             }, 400)
 
-        if validated_data['status'] == 'accepted':
+        if data['status'] == 'accepted':
             self.friendship_request_repository.update(friendship_request_id, status='accepted')
 
             self.friendship_repository.create(user_id=user_id, friend_id=friendship_request['sender_id'])
@@ -178,7 +158,7 @@ class FriendshipRequestService:
             return make_response({
                 "message": 'friendship request successfully accepted'
             }, 200)
-        elif validated_data['status'] == 'refused':
+        elif data['status'] == 'refused':
             self.friendship_request_repository.update(friendship_request_id, status='refused')
 
             return make_response({

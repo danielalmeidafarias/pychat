@@ -13,7 +13,7 @@ from ..friendship.friendship_repository import FriendshipRepository
 from ..chat.chat_repository import ChatRepository
 from ..chat_members.chat_members_repository import ChatMemberRepository
 from ..middlewares.auth_middleware import auth_middleware
-from ..middlewares.validate_route_middleware import ValidateRouteMiddleware
+from ..middlewares.validate_data_middleware import ValidateDataMiddleware
 
 friendship_request_namespace = Namespace('friendship_request', 'Friendship_request Route')
 requests = Friendship_requestRequestModels(friendship_request_namespace)
@@ -40,18 +40,18 @@ friendship_request_service = FriendshipRequestService(
 @friendship_request_namespace.route('')
 class FriendshipRequestResource(Resource):
     @auth_middleware
-    @ValidateRouteMiddleware(GetFriendshipRequestSchema).middleware
+    @ValidateDataMiddleware(GetFriendshipRequestSchema).middleware
     def get(self):
         return friendship_request_service.get(request=request)
 
-    @ValidateRouteMiddleware(CreateFriendshipRequestSchema).middleware
+    @ValidateDataMiddleware(CreateFriendshipRequestSchema).middleware
     def post(self):
         return friendship_request_service.create(request)
 
 @friendship_request_namespace.route('/<friendship_request_id>')
 class UniqueFriendshipRequestResource(Resource):
     @auth_middleware
-    @ValidateRouteMiddleware(UpdateFriendshipRequestSchema).middleware
+    @ValidateDataMiddleware(UpdateFriendshipRequestSchema).middleware
     def put(self, friendship_request_id):
         return friendship_request_service.update(request, friendship_request_id)
 
