@@ -27,7 +27,7 @@
                 <div class="mb-3">
                     <label for="name" class="form-label text-dark-green">Name</label>
                     <div class="input-group">
-                        <input type="text" id="name" name="name" class="readonly-input" value="{{ user.name }}" readonly>
+                        <input type="text" id="name" name="name" class="readonly-input form-control" value="{{ user.name }}" readonly>
                         <button type="button" id="edit-name" class="btn bg-light-green text-white btn-edit">Edit</button>
                     </div>
                 </div>
@@ -36,18 +36,20 @@
                 <div class="mb-3">
                     <label for="email" class="form-label text-dark-green">Email</label>
                     <div class="input-group">
-                        <input type="email" id="email" name="email" class="readonly-input" value="{{ user.email }}" readonly>
+                        <input type="email" id="email" name="email" class="readonly-input form-control" value="{{ user.email }}" readonly>
                         <button type="button" id="edit-email" class="btn bg-light-green text-white btn-edit">Edit</button>
                     </div>
                 </div>
 
-                <!-- Password -->
+                <!-- Password with Eye Icon -->
                 <div class="mb-3">
                     <label for="password" class="form-label text-dark-green">Password</label>
-                    <div class="input-group">
-                        <input type="password" id="password" name="password" class="readonly-input" value="null" readonly>
+                    <div class="input-group position-relative">
+                        <input placeholder="password" type="password" id="password" class="form-control readonly-input" readonly>
+                        <i class="fas fa-eye profile-eye-icon" id="password-eye-icon"></i>
                         <button type="button" id="edit-password" class="btn bg-light-green text-white btn-edit">Edit</button>
                     </div>
+
                 </div>
 
                 <!-- Buttons -->

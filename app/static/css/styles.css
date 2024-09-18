@@ -91,27 +91,24 @@ footer {
 .readonly-input:focus {
   border-color: #7FB77E;
   box-shadow: none;
+  outline: none;
+    z-index: auto
 }
 
 .focus-readonly-input {
   padding: 0.375rem 0.75rem;
   border-radius: 0.25rem;
-  background-color: #f8f9fa;
   font-size: 1rem;
-  width: calc(100% - 100px); /* Adjust width to leave space for button */
   border: 1px solid #7FB77E;
   box-shadow: none;
+  pointer-events: auto;
+    z-index: 1
 }
 
 
 .btn-edit {
   margin-left: 10px;
   flex-shrink: 0; /* Prevents button from shrinking */
-}
-
-.input-group {
-  display: flex;
-  align-items: center; /* Vertically aligns button and input */
 }
 
     .btn-purple {
@@ -206,3 +203,39 @@ footer {
 .edit-icon i {
     font-size: 16px;
 }
+
+.position-relative {
+    position: relative;
+}
+
+/* Position the eye icon correctly and ensure it remains visible */
+.profile-eye-icon {
+    position: absolute;
+    top: 50%;
+    right: 80px; /* Adjust to position near the button */
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #4C8067;
+    z-index: 10; /* Ensure the icon is on top of other elements */
+}
+
+.signup-eye-icon {
+    position: absolute;
+    top: 50%;
+    right: 15px; /* Adjust the position of the icon */
+    transform: translateY(50%);
+    cursor: pointer;
+    color: #4C8067;
+}
+
+/* Ensure the input has enough padding to avoid overlapping the icon */
+.form-control {
+    padding-right: 70px; /* Adjust to make room for the eye icon */
+}
+
+/* Adjust the margin of the button */
+.btn-edit {
+    margin-left: 10px; /* Keep some space between the input and the button */
+}
+
+

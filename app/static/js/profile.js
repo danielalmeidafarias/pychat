@@ -21,6 +21,8 @@ const editPictureIcon = document.getElementById('edit-picture-icon')
 const saveChangesBtn = document.getElementById('save-changes-btn')
 const deleteAccountBtn = document.getElementById('delete-account-btn')
 
+const passwordEyeIcon = document.getElementById('password-eye-icon')
+
 const form = new FormData()
 
 // Edit/Cancel btn logic
@@ -92,8 +94,6 @@ editPasswordBtn.addEventListener('click', () => {
         password.classList.add('readonly-input')
         password.setAttribute('readonly', true)
 
-        password.value = '********'
-
         editPasswordBtn.classList.add('bg-light-green')
         editPasswordBtn.classList.remove('bg-light-red')
         editPasswordBtn.innerText = 'edit'
@@ -145,6 +145,18 @@ email.addEventListener('input', (e) => {
 password.addEventListener('input', (e) => {
     form.delete('password')
     form.append('password', password.value)
+})
+
+passwordEyeIcon.addEventListener('click', () => {
+    if (password.type == 'password') {
+        password.setAttribute('type', 'text')
+        passwordEyeIcon.classList.remove('fa-eye');
+        passwordEyeIcon.classList.add('fa-eye-slash');
+    } else {
+        password.setAttribute('type', 'password')
+        passwordEyeIcon.classList.remove('fa-eye-slash');
+        passwordEyeIcon.classList.add('fa-eye');
+    }
 })
 
 // Saving changes
