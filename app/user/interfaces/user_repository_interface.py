@@ -34,7 +34,7 @@ class UserRepositoryInterface(ABC):
         pass
 
     @abstractmethod
-    def update(self, user_id: str, email: Optional[str], name: Optional[str], password: Optional[bytes]):
+    def update(self, user_id: str, data):
         pass
 
     @abstractmethod

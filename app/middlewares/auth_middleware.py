@@ -1,4 +1,4 @@
-from flask import request, redirect
+from flask import request, redirect, make_response
 from functools import wraps
 from dotenv import load_dotenv
 from ..auth.util import AuthFunctions
@@ -10,7 +10,6 @@ load_dotenv()
 class AuthMiddleware:
     def __init__(self):
         self.auth_functions = AuthFunctions()
-        pass
 
     def middleware(self, func):
         """
@@ -26,14 +25,20 @@ class AuthMiddleware:
             try:
                 self.auth_functions.verify_access_token(authorization_cookie)
                 response = func(*args, **kwargs)
+                print(response)
                 return self.auth_functions.set_auth_cookies(response, authorization_cookie)
             except Exception as err:
                 if request.method == 'GET':
                     if err == "Expired access_token":
-                        return redirect('/auth/signin?expired_session=true')
+                        response = make_response(redirect('/auth/signin?expired_session=true'))
+                        response.set_cookie('authorization', '')
+                        return response
                     else:
-                        return redirect('/auth/signin?unauthorized=true')
+                        response = make_response(redirect('/auth/signin?unauthorized=true'))
+                        response.set_cookie('authorization', '')
+                        return response
                 else:
+
                     return {
                         "message": "Unauthorized"
                     }, 401

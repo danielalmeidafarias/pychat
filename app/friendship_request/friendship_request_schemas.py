@@ -8,7 +8,6 @@ class ValidStatus(fields.Field):
 
 
 class CreateFriendshipRequestSchema(Schema):
-    sender_id = fields.UUID(required=True)
     receiver_id = fields.UUID(required=True)
 
 

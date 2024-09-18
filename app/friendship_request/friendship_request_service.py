@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 from flask import Request, make_response, render_template
-from .friendship_request_schemas import CreateFriendshipRequestSchema, UpdateFriendshipRequestSchema
 from sqlalchemy.exc import NoResultFound, IntegrityError
-from marshmallow.exceptions import ValidationError
 from ..user.user_service import UserRepositoryInterface
 from ..auth.util import AuthFunctions
 from ..friendship.friendship_repository import FriendshipRepository
@@ -66,37 +64,39 @@ class FriendshipRequestService:
         try:
             sender_user = self.user_repository.get_one(sender_id)
         except NoResultFound:
-            return {
+            response = make_response({
                 "message": "Unauthorized!"
-            }, 401
+            })
+            response.status_code = 401
+            return response
 
         try:
             self.user_repository.get_one(receiver_id)
         except NoResultFound:
-            return {
+            return make_response({
                 "message": "No User Found"
-            }, 404
+            }, 404)
 
 
         already_friends = self.friendship_repository.get(user_id=sender_id, friend_id=receiver_id)
 
         if already_friends is not None:
-            return {
+            return make_response({
                     "message": 'You are already friends',
-                }, 400
+                }, 400)
 
         friendship_already_requested = self.friendship_request_repository.get_one(sender_id=sender_id,
                                                                              receiver_id=receiver_id)
         if friendship_already_requested is not None:
-            return {
+            return make_response({
                 "message": 'You had already sent a friendship request for this user'
-            }, 400
+            }, 400)
 
         try:
             friendship_request = self.friendship_request_repository.create(sender_id=sender_id,
                                                                       receiver_id=receiver_id)
 
-            return {
+            return make_response({
                 "message": "Friendship request sent",
                 'friendship_request': {
                     "id": friendship_request.id,
@@ -104,12 +104,12 @@ class FriendshipRequestService:
                     "receiver_id": friendship_request.receiver_id,
                     "status": friendship_request.status
                 }
-            }, 200
+            }, 200)
         except IntegrityError as err:
             print(err)
-            return {
+            return make_response({
                 "message": 'You are already friends'
-            }, 500
+            }, 500)
 
     def get(self, request: Request):
         user_id = self.auth_functions.decode_jwt(request.cookies.get('authorization'))['user_id']

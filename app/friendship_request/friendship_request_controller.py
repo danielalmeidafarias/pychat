@@ -62,12 +62,14 @@ class UniqueFriendshipRequestResource(Resource):
     @auth_middleware
     @auth_middleware
     @ValidateDataMiddleware(UpdateFriendshipRequestSchema).middleware
-    def put(self, friendship_request_id):
+    def put(self):
+        friendship_request_id = request.view_args['friendship_request_id']
         return friendship_request_service.update(request, friendship_request_id)
 
 
     @ddos_protect_middleware
     @blocked_ip_middleware
     @auth_middleware
-    def delete(self, friendship_request_id):
+    def delete(self):
+        friendship_request_id = request.view_args['friendship_request_id']
         return friendship_request_service.delete(friendship_request_id)

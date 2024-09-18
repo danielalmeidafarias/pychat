@@ -25,7 +25,6 @@ class ChatWebsocket(SocketIO):
 
     def register_handlers(self):
         @self.on('connect')
-        @auth_ws_middleware
         def on_connect():
             socketio_id = request.sid
             authorization_cookies = request.cookies.get('authorization')
@@ -54,7 +53,6 @@ class ChatWebsocket(SocketIO):
         @self.on('message')
         @auth_ws_middleware
         def on_message(data):
-            print('connected:', self.connected)
             authorization_cookies = request.cookies.get('authorization')
 
             user_id = self.auth_functions.decode_jwt(authorization_cookies)['user_id']

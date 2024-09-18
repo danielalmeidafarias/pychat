@@ -27,6 +27,9 @@ class AuthFunctions:
         return access_token
 
     def verify_access_token(self, authorization_cookie):
+        if authorization_cookie is None:
+            raise Exception('None access_token')
+
         decoded_jwt = self.decode_jwt(jwt_token=authorization_cookie)
         expires_at = datetime.datetime.strptime(decoded_jwt['expires_at'], '%Y-%m-%d %H:%M:%S.%f')
 

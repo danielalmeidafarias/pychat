@@ -1,5 +1,5 @@
 from app.db import r
-from flask import request
+from flask import request, make_response
 from functools import wraps
 from ..common.functions.stringdate_to_datetime import stringdate_to_datetime
 from ..common.functions.datetime_to_string import datetime_to_string
@@ -39,10 +39,10 @@ class DDOSProtectMiddleware:
                     'last_request': datetime_to_string(datetime.now()),
                 })
                 r.expireat(f"ip_address:{ip_address}", datetime.now() + timedelta(seconds=1))
-
-                requests_per_second = (int(requests) + 1) / seconds_since_first_request
-
-                print(requests_per_second)
+                try:
+                    requests_per_second = (int(requests) + 1) / seconds_since_first_request
+                except ZeroDivisionError:
+                    requests_per_second = 0
 
                 if requests_per_second > 1 and int(requests) + 1 >= 30:
                     r.set(f"blocked_ip:{ip_address}", 1)
@@ -51,9 +51,10 @@ class DDOSProtectMiddleware:
                         "message": "Too many requests"
                     }
                 elif requests_per_second > 1 and int(requests) + 1 >= 10:
-                    return {
+                    response = make_response({
                         "message": "Too many requests"
-                    }, 429
+                    }, 429)
+                    return response
                 else:
                     return func(self)
 

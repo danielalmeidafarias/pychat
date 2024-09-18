@@ -1,7 +1,5 @@
 from sqlalchemy.exc import NoResultFound
-from app.auth.auth_schemas import SignInSchema
-from flask import Request, make_response, render_template
-from marshmallow import ValidationError
+from flask import Request, make_response
 import datetime
 from redis import Redis
 from ..user.user_service import UserRepositoryInterface
@@ -32,7 +30,6 @@ class AuthService:
                 access_token = self.auth_functions.get_access_token(user['id'])
                 response = make_response("Login successful")
                 response.set_cookie('authorization', access_token, samesite='Lax', httponly=True)
-                # response.set_cookie('authorization', access_token, httponly=True, secure=True, samesite='Lax')
 
                 return response
             else:
@@ -55,18 +52,18 @@ class AuthService:
                         self.r.set(f"login_count:{user['id']}", int(login_trying_count) + 1)
                         self.r.expireat(f"login_count:{user['id']}", datetime.datetime.now() + datetime.timedelta(minutes=15))
 
-                        return {
+                        return make_response({
                             "message": "Too many login attempts, try again later"
-                        }, 401
+                        }, 401)
 
-                return {
+                return make_response({
                     "message": "Unauthorized"
-                }, 401
+                }, 401)
         except Exception as err:
             print(err)
-            return {
+            return make_response({
                 "message": "Something went wrong, please try again"
-            }, 500
+            }, 500)
 
     def sign_out(self):
         response = make_response()

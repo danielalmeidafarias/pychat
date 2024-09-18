@@ -28,7 +28,8 @@ class UserService:
                     },
                 })
                 response.status_code = 200
-                return self.auth_functions.set_auth_cookies(request.cookies.get('authorization'), response)
+                # return self.auth_functions.set_auth_cookies(request.cookies.get('authorization'), response)
+                return response
 
             except NoResultFound:
                 return {"message": "No user with this credentials was found"}, 400
@@ -46,7 +47,7 @@ class UserService:
                 return self.auth_functions.set_auth_cookies(request.cookies.get('authorization'), response)
             except Exception as err:
                 print(err)
-                return {"message": "Something went wrong, try again later"}, 500
+                return make_response({"message": "Something went wrong, try again later"}, 500)
 
     def create_user(self, request: Request):
         data = request.form.to_dict()
@@ -89,3 +90,60 @@ class UserService:
 
         return response
 
+    def update_profile(self, request: Request):
+        data = request.form.to_dict()
+        user_id = self.auth_functions.decode_jwt(request.cookies.get('authorization'))['user_id']
+
+        try:
+            user = self.user_repository.get_one(user_id)
+        except NoResultFound as err:
+            print(err)
+            response = make_response({"message": "No user with this credentials was found"}, 400)
+            response.set_cookie('authorization', '', httponly=True)
+            return response
+
+        for key, value in data.items():
+            if key == 'password':
+                if self.auth_functions.is_password_correct(data['password'], user['password']):
+                    data.pop('password')
+                else:
+                    data['password'] = bcrypt.hashpw(str.encode(data['password']), bcrypt.gensalt())
+
+            elif data[key] == user[key]:
+                data.pop(key)
+
+        try:
+            if request.files:
+                profile_pic = request.files['picture']
+                save_profile_pic(profile_pic, user_id)
+
+            if len(data) == 0:
+                response = make_response({"message": "No changes was required"}, 400)
+                return response
+
+            self.user_repository.update(user_id, data)
+
+        except IntegrityError as err:
+            print(err)
+            response = make_response({"message": "There is already a user with this credentials!"}, 400)
+            return response
+
+        except Exception as err:
+            print(err)
+
+        response = make_response({'success': True}, 200)
+        return response
+
+    def delete_profile(self, request: Request):
+        user_id = self.auth_functions.decode_jwt(request.cookies.get('authorization'))['user_id']
+        try:
+            self.user_repository.delete(user_id)
+
+
+            response = make_response({"message": "User deleted successfully"}, 200)
+            response.set_cookie('authorization', '', httponly=True)
+            return response
+        except Exception as err:
+            print(err)
+            response = make_response({"message": str(err)}, 500)
+            return response

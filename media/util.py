@@ -1,3 +1,4 @@
+from flask import make_response
 from werkzeug.utils import secure_filename
 from PIL import Image
 import os
@@ -9,7 +10,8 @@ def save_profile_pic(profile_pic, user_id):
     try:
         img = Image.open(f"media/temp/{filename}")
     except OSError:
-        return {"message": "The file is not a valid image or unsupported format."}, 404
+        response = make_response({"message": "The file is not a valid image or unsupported format."}, 404)
+        return response
 
     crop_size = min(img.width, img.height)
 

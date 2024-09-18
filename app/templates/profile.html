@@ -5,56 +5,63 @@
 <div class="container my-5">
     <h1 class="text-center text-dark-green">Profile Settings</h1>
 
-    <!-- User Photo -->
-    <div class="row justify-content-center mb-4">
-        <div class="col-md-6 text-center">
-            <img src="http://localhost:5000/media/150/{{ user.id }}" alt="User Photo" class="rounded-circle img-fluid mb-3">
+    <!-- Form for profile settings -->
+    <form id="update_form" enctype="multipart/form-data">
+        <!-- User Photo -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-6 text-center position-relative">
+                <div class="profile-photo-container">
+                    <img id="profile-picture" src="http://localhost:5000/media/150/{{ user.id }}" alt="User Photo" class="rounded-circle img-fluid mb-3 profile-photo">
+                    <label class="edit-icon" id="edit-picture" for="picture">
+                        <i id="edit-picture-icon" class="fas fa-pencil-alt"></i>
+                    </label>
+                    <input class="d-none" type="file" name="picture" id="picture" accept="image/*">
+                </div>
+            </div>
         </div>
-    </div>
 
-    <!-- Profile Info -->
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <!-- Name -->
-            <div class="mb-3">
-                <label for="name" class="form-label text-dark-green">Name</label>
-                <div class="input-group">
-                    <input type="text" id="name" class="readonly-input" value="{{ user.name }}" readonly>
-                    <button id="edit " class="btn bg-light-green text-white btn-edit">Edit</button>
+        <!-- Profile Info -->
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <!-- Name -->
+                <div class="mb-3">
+                    <label for="name" class="form-label text-dark-green">Name</label>
+                    <div class="input-group">
+                        <input type="text" id="name" name="name" class="readonly-input" value="{{ user.name }}" readonly>
+                        <button type="button" id="edit-name" class="btn bg-light-green text-white btn-edit">Edit</button>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Email -->
-            <div class="mb-3">
-                <label for="email" class="form-label text-dark-green">Email</label>
-                <div class="input-group">
-                    <input type="email" id="email" class="readonly-input" value="{{ user.email }}" readonly>
-                    <button class="btn bg-light-green text-white btn-edit">Edit</button>
+                <!-- Email -->
+                <div class="mb-3">
+                    <label for="email" class="form-label text-dark-green">Email</label>
+                    <div class="input-group">
+                        <input type="email" id="email" name="email" class="readonly-input" value="{{ user.email }}" readonly>
+                        <button type="button" id="edit-email" class="btn bg-light-green text-white btn-edit">Edit</button>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Password -->
-            <div class="mb-3">
-                <label for="password" class="form-label text-dark-green">Password</label>
-                <div class="input-group">
-                    <input type="password" id="password" class="readonly-input" value="********" readonly>
-                    <button class="btn bg-light-green text-white btn-edit">Edit</button>
+                <!-- Password -->
+                <div class="mb-3">
+                    <label for="password" class="form-label text-dark-green">Password</label>
+                    <div class="input-group">
+                        <input type="password" id="password" name="password" class="readonly-input" value="null" readonly>
+                        <button type="button" id="edit-password" class="btn bg-light-green text-white btn-edit">Edit</button>
+                    </div>
                 </div>
-            </div>
 
+                <!-- Buttons -->
                 <div class="row justify-content-center mt-4">
-        <div class="col-md-6 text-center align-items-center w-auto">
-            <div class="input-group">
-                <button class="btn btn-danger" id="delete-account-btn">Delete Account</button>
-                <button class="btn bg-light-green text-white" id="save-changes-btn" disabled>Save Changes</button>
+                    <div class="col-md-6 text-center align-items-center w-auto">
+                        <div class="flex-column">
+                            <button class="btn bg-light-green text-white" id="save-changes-btn" type="submit">Save Changes</button>
+                            <button class="btn btn-danger" id="delete-account-btn" type="button">Delete Account</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-        </div>
-    </div>
-
-    <!-- Buttons Section -->
-
+    </form>
 </div>
 
 <!-- JavaScript for handling the delete account button -->

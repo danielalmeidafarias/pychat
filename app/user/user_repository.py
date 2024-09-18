@@ -1,6 +1,11 @@
 from .user_model import User
+from ..chat_members.chat_members_model import chat_members
+from ..chat.model import Chat
+from ..friendship.friendship_model import friendship_table
+from ..friendship_request.friendship_request_model import FriendshipRequest
+from ..message.message_model import Message
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from .user_schemas import UpdateUserSchema
 from .interfaces.user_repository_interface import UserRepositoryInterface, UserResponse
 from typing import Optional
@@ -25,7 +30,7 @@ class UserRepository(UserRepositoryInterface):
     def get_one(self, user_id: str):
         user = self.db.session.execute(select(User).where(User.id == user_id)).scalar_one()
         return {
-                id: user_id,
+                "id": user_id,
                 "name": user.name,
                 "email": user.email,
                 "password": user.password,
@@ -50,21 +55,33 @@ class UserRepository(UserRepositoryInterface):
         users = [{"id": user.id, "name": user.name} for user in data]
         return users
 
-    def update(self, user_id: str, email: Optional[str], name: Optional[str], password: Optional[bytes]):
-        schema = UpdateUserSchema()
-
-        validated_data = schema.dump({
-            "email": email,
-            "name": name,
-            "password": password
-        })
-
-        (self.db.session.query(User).where(User.id == user_id).update(validated_data))
+    def update(self, user_id: str, data):
+        (self.db.session.query(User).where(User.id == user_id).update(data))
 
         self.db.session.commit()
 
-    def delete(self):
-        pass
+    def delete(self, user_id: str):
+        self.db.session.execute(
+            friendship_table.delete().where(
+                friendship_table.c.user_id == user_id
+            ).where(
+                friendship_table.c.friend_id == user_id
+            ))
+
+        self.db.session.execute(
+            chat_members.delete().where(
+                chat_members.c.user_id == user_id
+            )
+        )
+
+        self.db.session.query(FriendshipRequest).where(FriendshipRequest.sender_id == user_id).delete()
+        self.db.session.query(FriendshipRequest).where(FriendshipRequest.receiver_id == user_id).delete()
+
+        self.db.session.query(Message).where(Message.user_id == user_id).delete()
+
+        self.db.session.query(User).where(User.id == user_id).delete()
+
+        self.db.session.commit()
 
     def search(self, user_id: str, name: str):
         users = self.db.session.execute(select(User).where(User.name.like(f"%{name}%"))).all()

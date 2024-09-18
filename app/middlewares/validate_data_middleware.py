@@ -1,4 +1,4 @@
-from flask import request, redirect
+from flask import request, redirect, make_response
 from functools import wraps
 from marshmallow import ValidationError, Schema as SchemaBaseClass
 
@@ -24,6 +24,8 @@ class ValidateDataMiddleware:
                 schema.load(validated_data)
                 return func(*args, **kwargs)
             except ValidationError as err:
-                return {"message": "Data Validation Error!", "errors": err.messages}, 400
+                print(err)
+                response = make_response({"message": "Data Validation Error!", "errors": err.messages}, 400)
+                return response
         return wrapper
 

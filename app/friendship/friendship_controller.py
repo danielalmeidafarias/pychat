@@ -31,7 +31,7 @@ class FriendshipResource(Resource):
         user_id = auth_functions.decode_jwt(request.cookies.get('authorization'))['user_id']
         user = user_repository.get_one(user_id)
 
-        search = request.args.get('search')
+        search = request.args.get('name')
 
         if search is not None:
             results = user_repository.search(user_id, search)

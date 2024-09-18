@@ -58,17 +58,15 @@ class ProfileResource(Resource):
     def get(self):
         return user_service.user_profile(request=request)
 
-
     @ddos_protect_middleware
     @blocked_ip_middleware
     @auth_middleware
     @ValidateDataMiddleware(UpdateUserSchema).middleware
-    def put(self, recipient_user_id):
-        pass
-
+    def put(self):
+        return user_service.update_profile(request=request)
 
     @ddos_protect_middleware
     @blocked_ip_middleware
     @auth_middleware
-    def delete(self, recipient_user_id):
-        pass
+    def delete(self):
+        return user_service.delete_profile(request=request)
