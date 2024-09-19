@@ -72,3 +72,16 @@ const BaseResponse = async(response, icon) => {
     })
 }
 
+const SuccessfullUpdate = async () => {
+    await Toast.fire({
+        icon: 'success',
+        title: 'Account updated!',
+    })
+}
+
+const NoChanges = async () => {
+    await Toast.fire({
+        icon: 'warning',
+        title: 'No changes was required!',
+    })
+}

@@ -98,11 +98,12 @@ class UserService:
             user = self.user_repository.get_one(user_id)
         except NoResultFound as err:
             print(err)
-            response = make_response({"message": "No user with this credentials was found"}, 400)
+            response = make_response({"message": "No user with this credentials was found"}, 404)
             response.set_cookie('authorization', '', httponly=True)
             return response
 
-        for key, value in data.items():
+        iterable_data = data.copy()
+        for key, value in iterable_data.items():
             if key == 'password':
                 if self.auth_functions.is_password_correct(data['password'], user['password']):
                     data.pop('password')
@@ -125,13 +126,13 @@ class UserService:
 
         except IntegrityError as err:
             print(err)
-            response = make_response({"message": "There is already a user with this credentials!"}, 400)
+            response = make_response({"message": "There is already a user with this credentials!"}, 409)
             return response
 
         except Exception as err:
             print(err)
 
-        response = make_response({'success': True}, 200)
+        response = make_response({'Account updated with success': True}, 200)
         return response
 
     def delete_profile(self, request: Request):

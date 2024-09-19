@@ -1,3 +1,11 @@
+let params = new URLSearchParams(document.location.search)
+
+if (params.get('unchanged') == 'true') {
+    NoChanges()
+} else if(params.get('success') == 'true') {
+    SuccessfullUpdate()
+}
+
 // Taking inputs and it's original values
 const name = document.getElementById('name')
 const nameOriginalValue = name.value
@@ -163,10 +171,22 @@ passwordEyeIcon.addEventListener('click', () => {
 saveChangesBtn.addEventListener('click', async (e) => {
     e.preventDefault()
     try {
-        await axios.put('http://localhost:5000/user/profile', form)
-        window.location.reload()
+        const response = await axios.put('http://localhost:5000/user/profile', form)
+        if (response.status == 204) {
+            window.location == 'http://localhost:5000/user/profile?unchanged=true'
+        } else {
+            window.location == 'http://localhost:5000/user/profile?success=true'
+        }
+
     } catch (err) {
         console.log(err)
+        if(err.status == 401) {
+            Unauthorized()
+        } else if(err.status == 400) {
+            DataValidationError(err)
+        } else {
+            BaseResponse(err, "warning")
+        }
     }
 })
 
