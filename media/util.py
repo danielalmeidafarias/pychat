@@ -11,6 +11,7 @@ def save_profile_pic(profile_pic, user_id):
         img = Image.open(f"media/temp/{filename}")
     except OSError as err:
         print(err)
+        os.remove(f"media/temp/{filename}")
         response = make_response({"message": "The file is not a valid image or unsupported format."}, 404)
         return response
 
@@ -37,3 +38,14 @@ def save_profile_pic(profile_pic, user_id):
 
     os.remove(f"media/temp/{filename}")
 
+def delete_profile_pic(user_id):
+    filename = secure_filename(f"{user_id}.png")
+
+    try:
+        os.remove(f"media/50/50_{filename}")
+        os.remove(f"media/150/150_{filename}")
+        os.remove(f"media/300/300_{filename}")
+    except OSError as err:
+        print(err)
+        response = make_response({"message": "Something went wrong, please try again later"}, 500)
+        return response

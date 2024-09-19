@@ -4,7 +4,7 @@ import uuid
 import bcrypt
 from sqlalchemy.exc import IntegrityError
 from ..auth.util import AuthFunctions
-from media.util import save_profile_pic
+from media.util import save_profile_pic, delete_profile_pic
 from .interfaces.user_repository_interface import UserRepositoryInterface
 
 
@@ -155,6 +155,7 @@ class UserService:
             else:
                 try:
                     self.user_repository.delete(user_id)
+                    delete_profile_pic(user_id)
 
                     response = make_response({"message": "User deleted successfully"}, 200)
                     response.set_cookie('authorization', '', httponly=True)
