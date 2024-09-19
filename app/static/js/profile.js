@@ -2,7 +2,7 @@ let params = new URLSearchParams(document.location.search)
 
 if (params.get('unchanged') == 'true') {
     NoChanges()
-} else if(params.get('success') == 'true') {
+} else if (params.get('success') == 'true') {
     SuccessfullUpdate()
 }
 
@@ -106,12 +106,11 @@ editPasswordBtn.addEventListener('click', () => {
         editPasswordBtn.classList.remove('bg-light-red')
         editPasswordBtn.innerText = 'edit'
 
-        form.delete('password')
+        form.delete('new_password')
     }
 })
 
 editPictureIcon.addEventListener('click', (e) => {
-    e.preventDefault()
     if (editPictureIcon.classList.contains('fa-trash-alt')) {
         profilePicture.src = originalPictureSrc
 
@@ -127,7 +126,7 @@ editPictureIcon.addEventListener('click', (e) => {
 // Changing form values
 picture.addEventListener('change', (e) => {
     e.preventDefault()
-    const [ file ] = picture.files
+    const [file] = picture.files
     if (file) {
         profilePicture.src = URL.createObjectURL(file)
 
@@ -151,8 +150,8 @@ email.addEventListener('input', (e) => {
 })
 
 password.addEventListener('input', (e) => {
-    form.delete('password')
-    form.append('password', password.value)
+    form.delete('new_password')
+    form.append('new_password', password.value)
 })
 
 passwordEyeIcon.addEventListener('click', () => {
@@ -170,32 +169,69 @@ passwordEyeIcon.addEventListener('click', () => {
 // Saving changes
 saveChangesBtn.addEventListener('click', async (e) => {
     e.preventDefault()
-    try {
-        const response = await axios.put('http://localhost:5000/user/profile', form)
-        if (response.status == 204) {
-            window.location == 'http://localhost:5000/user/profile?unchanged=true'
-        } else {
-            window.location == 'http://localhost:5000/user/profile?success=true'
-        }
 
-    } catch (err) {
-        console.log(err)
-        if(err.status == 401) {
-            Unauthorized()
-        } else if(err.status == 400) {
-            DataValidationError(err)
-        } else {
-            BaseResponse(err, "warning")
-        }
+    if (form.keys().toArray().length == 0) {
+        await Toast.fire({
+            icon: 'warning',
+            title: 'No changes was required!',
+        })
+    } else {
+        Swal.fire({
+            title: "Your password",
+            input: "password",
+            inputAttributes: {
+                autocapitalize: "off"
+            },
+            showCancelButton: true,
+            confirmButtonText: "Submit",
+            showLoaderOnConfirm: true,
+            preConfirm: async (password) => {
+                try {
+                    form.append('password', password)
+
+                    await axios.put('http://localhost:5000/user/profile', form)
+                    window.location = 'http://localhost:5000/user/profile?success=true'
+
+                } catch (err) {
+                    form.delete('password')
+
+                    if (err.status == 401) {
+                        Swal.showValidationMessage(`${err.response.data.message}`);
+                    } else if (err.status == 400) {
+                        DataValidationError(err)
+                    } else {
+                        BaseResponse(err, "warning")
+                    }
+                }
+            },
+        })
     }
 })
 
 // Delete account
 deleteAccountBtn.addEventListener('click', async () => {
-    try {
-        await axios.delete('http://localhost:5000/user/profile')
-        window.location.reload()
-    } catch (err) {
-        console.log(err)
-    }
+    Swal.fire({
+            title: "Your password",
+            input: "password",
+            inputAttributes: {
+                autocapitalize: "off"
+            },
+            showCancelButton: true,
+            confirmButtonText: "Submit",
+            showLoaderOnConfirm: true,
+            preConfirm: async (password) => {
+                try {
+                    await axios.delete('http://localhost:5000/user/profile', {
+                        data: {'password': password}
+                    })
+                    window.location.reload()
+                } catch (err) {
+                    if (err.status == 401) {
+                        Swal.showValidationMessage(`${err.response.data.message}`);
+                    } else {
+                        BaseResponse(err, "warning")
+                    }
+                }
+            },
+        })
 })

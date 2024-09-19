@@ -2,7 +2,7 @@ from flask import request, make_response, render_template
 from flask_restx import Resource, Namespace
 from .docs.response_models import UserResponseModels
 from .docs.request_models import UserRequestModels
-from .user_schemas import GetUserSchema, CreateUserSchema, UpdateUserSchema
+from .user_schemas import GetUserSchema, CreateUserSchema, UpdateUserSchema, DeleteUserSchema
 from ..common.docs.response_models import CommonResponseModels
 from app.db import db
 from app.auth.util import AuthFunctions

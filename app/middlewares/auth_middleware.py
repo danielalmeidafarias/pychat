@@ -28,6 +28,7 @@ class AuthMiddleware:
                 print(response)
                 return self.auth_functions.set_auth_cookies(response, authorization_cookie)
             except Exception as err:
+                print(err)
                 if request.method == 'GET':
                     if err == "Expired access_token":
                         response = make_response(redirect('/auth/signin?expired_session=true'))

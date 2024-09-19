@@ -50,7 +50,7 @@ const createReceivedMessageDOM = (message) => {
     messageDiv.classList.add('bg-dark-green', 'text-white', 'p-2', 'rounded');
 
     const userNameStrong = document.createElement('strong');
-    userNameStrong.textContent = message.user_name + ": " 
+    userNameStrong.textContent = message.user_name + ": "
 
     messageDiv.appendChild(userNameStrong);
 
@@ -86,7 +86,7 @@ sendButton.addEventListener('click', () => {
 
 document.addEventListener("keypress", (event) => {
     if (event.key === "Enter") {
-      document.getElementById("send-btn").click();
+        document.getElementById("send-btn").click();
     }
 });
 
@@ -101,16 +101,16 @@ socket.on('message', (message) => {
 
 socket.on('disconnect', () => {
     Swal.fire({
-  title: "Connection Error",
-  text: "Do you want to reload?",
-  icon: "warning",
-  showCancelButton: true,
-  confirmButtonColor: "#3085d6",
-  cancelButtonColor: "#d33",
-  confirmButtonText: "Reload"
-}).then((result) => {
-  if (result.isConfirmed) {
-    window.location.reload()
-  }
-});
+        title: "Connection Error",
+        text: "Do you want to reload?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Reload"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.reload()
+        }
+    });
 })

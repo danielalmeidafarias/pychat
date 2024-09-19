@@ -102,27 +102,33 @@ class UserService:
             response.set_cookie('authorization', '', httponly=True)
             return response
 
+        if not self.auth_functions.is_password_correct(data['password'], user['password']):
+            return make_response({"message": "Wrong password"}, 401)
+        else:
+            data.pop('password')
+
         iterable_data = data.copy()
         for key, value in iterable_data.items():
-            if key == 'password':
-                if self.auth_functions.is_password_correct(data['password'], user['password']):
-                    data.pop('password')
+            if key == 'new_password':
+                if self.auth_functions.is_password_correct(data['new_password'], user['password']):
+                    data.pop('new_password')
                 else:
-                    data['password'] = bcrypt.hashpw(str.encode(data['password']), bcrypt.gensalt())
+                    data['new_password'] = bcrypt.hashpw(str.encode(data['new_password']), bcrypt.gensalt())
 
             elif data[key] == user[key]:
                 data.pop(key)
 
         try:
-            if request.files:
-                profile_pic = request.files['picture']
-                save_profile_pic(profile_pic, user_id)
-
-            if len(data) == 0:
+            if len(data) == 0 and not request.files:
                 response = make_response({"message": "No changes was required"}, 400)
                 return response
+            else:
+                if request.files:
+                    profile_pic = request.files['picture']
+                    save_profile_pic(profile_pic, user_id)
 
-            self.user_repository.update(user_id, data)
+                if len(data) > 0:
+                    self.user_repository.update(user_id, data)
 
         except IntegrityError as err:
             print(err)
@@ -136,15 +142,24 @@ class UserService:
         return response
 
     def delete_profile(self, request: Request):
-        user_id = self.auth_functions.decode_jwt(request.cookies.get('authorization'))['user_id']
-        try:
-            self.user_repository.delete(user_id)
+        data = request.get_json()
 
+        if 'password' not in data:
+            return make_response({"message": "No password was provided"}, 401)
+        else:
+            user_id = self.auth_functions.decode_jwt(request.cookies.get('authorization'))['user_id']
+            user = self.user_repository.get_one(user_id)
 
-            response = make_response({"message": "User deleted successfully"}, 200)
-            response.set_cookie('authorization', '', httponly=True)
-            return response
-        except Exception as err:
-            print(err)
-            response = make_response({"message": str(err)}, 500)
-            return response
+            if not self.auth_functions.is_password_correct(data['password'], user['password']):
+                return make_response({"message": "Wrong password"}, 401)
+            else:
+                try:
+                    self.user_repository.delete(user_id)
+
+                    response = make_response({"message": "User deleted successfully"}, 200)
+                    response.set_cookie('authorization', '', httponly=True)
+                    return response
+                except Exception as err:
+                    print(err)
+                    response = make_response({"message": str(err)}, 500)
+                    return response

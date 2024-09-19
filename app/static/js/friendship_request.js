@@ -7,7 +7,7 @@ console.log(accept_btn)
 for (let element of accept_btn) {
     const btn = document.getElementById(element.id)
 
-    btn.addEventListener('click', async(e) => {
+    btn.addEventListener('click', async (e) => {
         e.preventDefault()
 
         const request_id = element.id.substring(7)
@@ -27,7 +27,7 @@ for (let element of accept_btn) {
 for (let element of refuse_btn) {
     const btn = document.getElementById(element.id)
 
-    btn.addEventListener('click', async(e) => {
+    btn.addEventListener('click', async (e) => {
         e.preventDefault()
 
         const request_id = element.id.substring(7)

@@ -10,9 +10,9 @@ const signIn = async () => {
             window.location.reload()
         })
     } catch (err) {
-        if(err.status == 409) {
+        if (err.status == 409) {
             BaseResponse(err, "warning")
-        } else if(err.status == 400) {
+        } else if (err.status == 400) {
             DataValidationError(err)
         } else {
             BaseResponse(err, "warning")
@@ -22,7 +22,7 @@ const signIn = async () => {
 
 const signup_btn = document.getElementById("signup_btn")
 
-signup_btn.addEventListener('click', async(event) => {
+signup_btn.addEventListener('click', async (event) => {
     event.preventDefault()
     await signIn()
 })

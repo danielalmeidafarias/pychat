@@ -33,9 +33,13 @@ class CreateUserSchema(Schema):
 class UpdateUserSchema(Schema):
     name = fields.Str(required=False, allow_none=True)
     email = fields.Email(required=False, allow_none=True)
-    password = StrongPassword(required=False, allow_none=True)
+    password = fields.Str(required=True, allow_none=True)
+    new_password = StrongPassword(required=False, allow_none=True)
 
 
 class GetUserSchema(Schema):
     user_id = fields.Integer(required=False, allow_none=True)
 
+
+class DeleteUserSchema(Schema):
+    password = fields.Str(required=False, allow_none=False)

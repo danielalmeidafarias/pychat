@@ -9,7 +9,8 @@ def save_profile_pic(profile_pic, user_id):
 
     try:
         img = Image.open(f"media/temp/{filename}")
-    except OSError:
+    except OSError as err:
+        print(err)
         response = make_response({"message": "The file is not a valid image or unsupported format."}, 404)
         return response
 

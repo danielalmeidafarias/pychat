@@ -1,33 +1,33 @@
 const Toast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      iconColor: 'white',
-      customClass: {
+    toast: true,
+    position: 'top-end',
+    iconColor: 'white',
+    customClass: {
         popup: 'colored-toast',
-      },
-      showConfirmButton: false,
-      timerProgressBar: true,
-      timer: 3000,
-      showCloseButton: true
+    },
+    showConfirmButton: false,
+    timerProgressBar: true,
+    timer: 3000,
+    showCloseButton: true
 })
 
 const FasterToast = Swal.mixin({
-      toast: true,
-      position: 'top-end',
-      iconColor: 'white',
-      customClass: {
+    toast: true,
+    position: 'top-end',
+    iconColor: 'white',
+    customClass: {
         popup: 'colored-toast',
-      },
-      showConfirmButton: false,
-      timerProgressBar: true,
-      timer: 1000,
-      showCloseButton: true
+    },
+    showConfirmButton: false,
+    timerProgressBar: true,
+    timer: 1000,
+    showCloseButton: true
 })
 
 const DataValidationError = async (err) => {
     let errors = ''
     let error_counter = 0
-    for (let error in err.response.data.errors){
+    for (let error in err.response.data.errors) {
         errors = errors + `\n ${error_counter = error_counter + 1}. ${err.response.data.errors[error]}`
     }
     await Toast.fire({
@@ -65,7 +65,7 @@ const SuccessfullLogout = async () => {
     })
 }
 
-const BaseResponse = async(response, icon) => {
+const BaseResponse = async (response, icon) => {
     await Toast.fire({
         icon: icon,
         title: response.response.data.message

@@ -1,9 +1,9 @@
 let params = new URLSearchParams(document.location.search)
 
 if (params.get('expired_session') == 'true') {
-        ExpiredAccessToken()
-} else if(params.get('unauthorized') == 'true') {
-        Unauthorized()
+    ExpiredAccessToken()
+} else if (params.get('unauthorized') == 'true') {
+    Unauthorized()
 }
 
 const signIn = async () => {
@@ -17,9 +17,9 @@ const signIn = async () => {
         window.location.reload()
     }).catch(async (err) => {
         console.log(err)
-        if(err.status == 401) {
+        if (err.status == 401) {
             BaseResponse(err, 'error')
-        } else if(err.status == 404){
+        } else if (err.status == 404) {
             BaseResponse(err, 'question')
         } else {
             BaseResponse(err, 'warning')
@@ -29,7 +29,7 @@ const signIn = async () => {
 
 const login_btn = document.getElementById("login_btn");
 
-login_btn.addEventListener('click', async(event) => {
+login_btn.addEventListener('click', async (event) => {
     event.preventDefault();
     await signIn();
 });
