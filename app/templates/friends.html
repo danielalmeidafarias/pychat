@@ -33,9 +33,12 @@
         </div>
       </div>
       {% set sent_request_ids = user['sent_requests'] | map(attribute='receiver_id') | list %}
+      {% set friends = user['friends'] | map(attribute='id') | list %}
       {% if result['id'] in sent_request_ids %}
         <button  id="{{ user['sent_requests'][sent_request_ids.index(result['id'])]['id'] }}" name="delete_request_btn"
                  class="btn btn-purple">Cancel Friendship Request</button>
+      {% elif result['id'] in friends %}
+      <button disabled class="btn btn-green text-black">You're already friends🥳</button>
       {% else %}
         <button id="{{ result['id'] }}" name="send_request_btn" class="btn btn-light-green">Send Friendship Request</button>
       {% endif %}
