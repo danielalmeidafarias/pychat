@@ -56,6 +56,8 @@ class ChatWebsocket(SocketIO):
             authorization_cookies = request.cookies.get('authorization')
 
             user_id = self.auth_functions.decode_jwt(authorization_cookies)['user_id']
+            data['user_id'] = user_id
+
             user = self.user_repository.get_one(user_id)
 
             chat_id = data['chat_id']
@@ -67,6 +69,7 @@ class ChatWebsocket(SocketIO):
             try:
                 schema.load(validated_data)
             except ValidationError as err:
+                print(err)
                 return {"message": "Data Validation Error!", "errors": err.messages}, 400
 
             chat = self.chat_repository.get(chat_id)

@@ -25,7 +25,6 @@ class AuthMiddleware:
             try:
                 self.auth_functions.verify_access_token(authorization_cookie)
                 response = func(*args, **kwargs)
-                print(response)
                 return self.auth_functions.set_auth_cookies(response, authorization_cookie)
             except Exception as err:
                 print(err)

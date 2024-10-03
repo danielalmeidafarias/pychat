@@ -49,7 +49,7 @@
           <p class="mb-0">{{ request['receiver']['email'] }}</p>
         </div>
       </div>
-      <button name="delete-btn" id="{{ request['id'] }}" class="btn btn-purple">Cancel Request</button>
+      <button name="delete-btn" id="refuse_{{ request['id'] }}" class="btn btn-purple">Cancel Request</button>
     </div>
     {% endfor %}
     {% endif %}

@@ -71,5 +71,6 @@ class UniqueFriendshipRequestResource(Resource):
     @blocked_ip_middleware
     @auth_middleware
     def delete(self):
+        print('entrou aqu')
         friendship_request_id = request.view_args['friendship_request_id']
         return friendship_request_service.delete(friendship_request_id)
